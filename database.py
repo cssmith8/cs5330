@@ -5,7 +5,9 @@ import os
 
 def connect_to_database() -> mysql.connector.MySQLConnection:
     try:
-        load_dotenv()
+        if (not load_dotenv()):
+            print("Could not load .env file.")
+            return None
         connection = mysql.connector.connect(
             host=os.getenv('DB_HOST'),
             database=os.getenv('DB_NAME'),
