@@ -1,33 +1,41 @@
+
 class Degree:
-    # degreeName: str
-    # degreeLevel: str
+    # (key) degreeName: str
+    # (key) degreeLevel: str
     def __init__(self, degreeName: str, degreeLevel: str):
         self.degreeName: str = degreeName
         self.degreeLevel: str = degreeLevel
 
 class DegreeCourse:
-    # degreeName: str
-    # degreeLevel: str
-    # courseID: int
+    # (key) degreeName: str
+    # (key) degreeLevel: str
+    # (key) courseID: int
     # isCore: bool
     def __init__(self, degreeName: str, degreeLevel: str, courseID: int, isCore: bool):
         self.degreeName: str = degreeName
         self.degreeLevel: str = degreeLevel
         self.courseID: int = courseID
         self.isCore: bool = isCore
+    
+    # get the attached degree from the database
+    def get(self, db) -> None:
+        from database import Database
+        if not isinstance(db, Database):
+            return None
+        return db.get_degree(self.degreeName, self.degreeLevel)
 
 class Course:
-    # courseID: str
+    # (key) courseID: str
     # courseName: str
     def __init__(self, courseID: str, courseName: str):
         self.courseID: str = courseID
         self.courseName: str = courseName
 
 class Section:
-    # sectionID: str
-    # courseID: str
-    # semester: str
-    # year: int
+    # (key) sectionID: str
+    # (key) courseID: str
+    # (key) semester: str
+    # (key) year: int
     # numStudents: int
     # instructorID: str
     def __init__(self, sectionID: str, courseID: str, semester: str, year: int, numStudents: int, instructorID: str):
@@ -39,16 +47,16 @@ class Section:
         self.instructorID: str = instructorID
 
 class Instructor:
-    # instructorID: str
+    # (key) instructorID: str
     # instructorName: str
     def __init__(self, instructorID: str, instructorName: str):
         self.instructorID: str = instructorID
         self.instructorName: str = instructorName
 
 class Goal:
-    # goalCode: str
-    # degreeName: str
-    # degreeLevel: str
+    # (key) goalCode: str
+    # (key) degreeName: str
+    # (key) degreeLevel: str
     # description: str
     def __init__(self, goalCode: str, degreeName: str, degreeLevel: str, description: str):
         self.goalCode: str = goalCode
@@ -57,10 +65,10 @@ class Goal:
         self.description: str = description
 
 class GoalCourse:
-    # goalCode: str
-    # degreeName: str
-    # degreeLevel: str
-    # courseID: str
+    # (key) goalCode: str
+    # (key) degreeName: str
+    # (key) degreeLevel: str
+    # (key) courseID: str
     def __init__(self, goalCode: str, degreeName: str, degreeLevel: str, courseID: str):
         self.goalCode: str = goalCode
         self.degreeName: str = degreeName
@@ -68,13 +76,13 @@ class GoalCourse:
         self.courseID: str = courseID
 
 class Evaluation:
-    # goalCode: str
-    # degreeName: str
-    # degreeLevel: str
-    # sectionID: str
-    # courseID: str
-    # semester: str
-    # year: int
+    # (key) goalCode: str
+    # (key) degreeName: str
+    # (key) degreeLevel: str
+    # (key) sectionID: str
+    # (key) courseID: str
+    # (key) semester: str
+    # (key) year: int
     # evaluationType: str
     # A: int
     # B: int

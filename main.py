@@ -12,4 +12,10 @@ def main():
     else:
         print("Connected to the database.")
 
-main()
+    db: Database = Database(connection)
+
+    db.create_tables()
+
+
+if __name__ == "__main__":
+    main()
