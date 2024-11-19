@@ -18,11 +18,18 @@ class DegreeCourse:
         self.isCore: bool = isCore
     
     # get the attached degree from the database
-    def get(self, db) -> None:
+    def get_degree(self, db) -> None:
         from database import Database
         if not isinstance(db, Database):
             return None
         return db.get_degree(self.degreeName, self.degreeLevel)
+    
+    # get the attached course from the database
+    def get_course(self, db) -> None:
+        from database import Database
+        if not isinstance(db, Database):
+            return None
+        return db.get_course(self.courseID)
 
 class Course:
     # (key) courseID: str
@@ -45,6 +52,13 @@ class Section:
         self.year: int = year
         self.numStudents: int = numStudents
         self.instructorID: str = instructorID
+    
+    # get the attached course from the database
+    def get_course(self, db) -> None:
+        from database import Database
+        if not isinstance(db, Database):
+            return None
+        return db.get_course(self.courseID)
 
 class Instructor:
     # (key) instructorID: str
