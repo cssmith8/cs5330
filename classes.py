@@ -51,6 +51,7 @@ class DegreeCourse:
             return None
         return db.get_course(self.courseID)
 
+
 class Course:
     # (key) courseID: str
     # courseName: str
@@ -81,6 +82,7 @@ class Course:
             print("Error: Incorrect database type passed into get_degree_courses()")
             return None
         return db.get_degree_courses_from_course(self.courseID)
+
 
 class Section:
     # (key) sectionID: str
@@ -121,6 +123,7 @@ class Section:
             return None
         return db.get_evaluations_from_section(self.sectionID, self.courseID, self.semester, self.year)
 
+
 class Instructor:
     # (key) instructorID: str
     # instructorName: str
@@ -135,6 +138,7 @@ class Instructor:
             print("Error: Incorrect database type passed into get_sections()")
             return None
         return db.get_sections_from_instructor(self.instructorID)
+
 
 class Goal:
     # (key) goalCode: str
@@ -171,6 +175,7 @@ class Goal:
             return None
         return db.get_evaluations_from_goal(self.goalCode, self.degreeName, self.degreeLevel)
 
+
 class GoalCourse:
     # (key) goalCode: str
     # (key) degreeName: str
@@ -197,6 +202,7 @@ class GoalCourse:
             print("Error: Incorrect database type passed into get_course()")
             return None
         return db.get_course(self.courseID)
+
 
 class Evaluation:
     # (key) goalCode: str

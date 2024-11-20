@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import os
 from classes import *
 
-
 def connect_to_database() -> mysql.connector.MySQLConnection:
     try:
         if (not load_dotenv()):
