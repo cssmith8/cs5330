@@ -113,3 +113,49 @@ class Database:
     def get_evaluation(self, goalCode: str, degreeName: str, degreeLevel: str, sectionID: str, courseID: str, semester: str, year: int) -> Evaluation:
         # TODO
         return None
+    
+    # gets all degree courses from the database given degreeName and degreeLevel
+    def get_degree_courses_from_degree(self, degreeName: str, degreeLevel: str) -> list[DegreeCourse]:
+        # TODO
+        return None
+    
+    # gets all degree courses from the database given courseID
+    def get_degree_courses_from_course(self, courseID: str) -> list[DegreeCourse]:
+        # TODO
+        return None
+    
+    # gets all goals from the database given degreeName and degreeLevel
+    def get_goals_from_degree(self, degreeName: str, degreeLevel: str) -> list[Goal]:
+        # TODO
+        return None
+    
+    # gets all goal courses from the database given goalCode, degreeName, and degreeLevel
+    def get_goal_courses_from_goal(self, goalCode: str, degreeName: str, degreeLevel: str) -> list[GoalCourse]:
+        # TODO
+        return None
+    
+    # gets all goal courses from the database given courseID
+    def get_goal_courses_from_course(self, courseID: str) -> list[GoalCourse]:
+        # TODO
+        return None
+    
+    # get all sections from the database given courseID
+    def get_sections_from_course(self, courseID: str) -> list[Section]:
+        # TODO
+        return None
+    
+    # get all sections from the database given instructorID
+    def get_sections_from_instructor(self, instructorID: str) -> list[Section]:
+        # TODO
+        return None
+    
+    # get all evaluations from the database given goalCode, DegreeName, and DegreeLevel
+    def get_evaluations_from_goal(self, goalCode: str, degreeName: str, degreeLevel: str) -> list[Evaluation]:
+        # TODO
+        return None
+    
+    # get all evaluations from the database given SectionID, CourseID, Semester, and Year
+    def get_evaluations_from_section(self, sectionID: str, courseID: str, semester: str, year: int) -> list[Evaluation]:
+        # TODO
+        return None
+    
