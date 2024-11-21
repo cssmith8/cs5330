@@ -1,6 +1,29 @@
 import mysql.connector
 from classes import *
 from database import *
+from pages import *
+
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
+
+class FlaskGlobal:
+    db: Database = None
+
+Global = FlaskGlobal()
+
+@app.route('/home/process', methods=['POST'])
+def process():
+    input_data = request.form.get('inputData')
+    input_data_2 = request.form.get('inputData2')
+    print (Global.db.is_connected())
+    # Process the data
+    result = some_processing_function(input_data)
+    result2 = some_processing_function(input_data_2)
+    return jsonify({'result': result + result2, 'invalid1': 0})
+
+def some_processing_function(input_data) -> str:
+    # Example processing function
+    print(f"Processing data: {input_data}")
+    return f"Processed data: {Global.db.is_connected()}"
 
 def main():
     # Create a connection to the database
@@ -11,11 +34,11 @@ def main():
         return
     else:
         print("Connected to the database.")
-
-    db: Database = Database(connection)
-
-    db.create_tables()
-
+        
+    Global.db = Database(connection)
+    Global.db.create_tables()
+    Global.db.clear_tables()
+    app.run(debug=True)
 
 if __name__ == "__main__":
     main()
