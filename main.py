@@ -8,13 +8,13 @@ from flask import Flask, render_template, request, flash, redirect, url_for, jso
 class FlaskGlobal:
     db: Database = None
 
-Global = FlaskGlobal()
+data = FlaskGlobal()
 
 @app.route('/home/process', methods=['POST'])
 def process():
     input_data = request.form.get('inputData')
     input_data_2 = request.form.get('inputData2')
-    print (Global.db.is_connected())
+    print (data.db.is_connected())
     # Process the data
     result = some_processing_function(input_data)
     result2 = some_processing_function(input_data_2)
@@ -23,7 +23,7 @@ def process():
 def some_processing_function(input_data) -> str:
     # Example processing function
     print(f"Processing data: {input_data}")
-    return f"Processed data: {Global.db.is_connected()}"
+    return f"Processed data: {data.db.is_connected()}"
 
 def main():
     # Create a connection to the database
@@ -35,9 +35,9 @@ def main():
     else:
         print("Connected to the database.")
         
-    Global.db = Database(connection)
-    Global.db.create_tables()
-    Global.db.clear_tables()
+    data.db = Database(connection)
+    data.db.create_tables()
+    data.db.clear_tables()
     app.run(debug=True)
 
 if __name__ == "__main__":
