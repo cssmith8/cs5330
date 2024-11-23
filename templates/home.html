@@ -17,12 +17,28 @@
                 <span id="field1error" style="color: red"></span>
                 <label for="inputData2">Input Data 2</label>
                 <input type="text" id="inputData2" name="inputData2" required>
+                <select name="dropdown" id="dropdown">
+                </select>
             </div>
             <button type="submit">Submit</button>
         </form>
-        <div id="result">r</div>
+        <div id="result"></div>
 
         <script>
+            // Fetch options from the server
+            fetch('/get_options')
+                .then(response => response.json())
+                .then(data => {
+                    const dropdown = document.getElementById('dropdown');
+                    data.options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option;
+                        dropdown.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+
             document.getElementById('dataForm').addEventListener('submit', function(event) {
                 event.preventDefault();
                 const formData = new FormData(event.target);
