@@ -24,6 +24,11 @@ class Database:
     # connection: mysql.connector.MySQLConnection
     def __init__(self, connection: mysql.connector.MySQLConnection):
         self.connection: mysql.connector.MySQLConnection = connection
+
+    def is_connected(self) -> bool:
+        if self.connection is None:
+            return False
+        return self.connection.is_connected()
     
     def create_tables(self) -> None:
         # TODO
