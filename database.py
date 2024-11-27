@@ -31,8 +31,115 @@ class Database:
         return self.connection.is_connected()
     
     def create_tables(self) -> None:
-        # TODO
-        return 
+        cursor = self.connection.cursor()
+        try:
+            # Create Degree table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Degree (
+                DegreeName VARCHAR(255),
+                DegreeLevel VARCHAR(255),
+                PRIMARY KEY (DegreeName, DegreeLevel)
+            )
+            """)
+
+            # Create Course table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Course (
+                CourseID VARCHAR(255) PRIMARY KEY,
+                CourseName VARCHAR(255)
+            )
+            """)
+
+            # Create Degree_Course table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Degree_Course (
+                DegreeName VARCHAR(255),
+                DegreeLevel VARCHAR(255),
+                CourseID VARCHAR(255),
+                IsCore BOOLEAN,
+                PRIMARY KEY (DegreeName, DegreeLevel, CourseID),
+                FOREIGN KEY (DegreeName, DegreeLevel) REFERENCES Degree(DegreeName, DegreeLevel),
+                FOREIGN KEY (CourseID) REFERENCES Course(CourseID)
+            )
+            """)
+
+            # Create Goal table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Goal (
+                GoalCode VARCHAR(255),
+                DegreeName VARCHAR(255),
+                DegreeLevel VARCHAR(255),
+                Description TEXT,
+                PRIMARY KEY (GoalCode, DegreeName, DegreeLevel),
+                FOREIGN KEY (DegreeName, DegreeLevel) REFERENCES Degree(DegreeName, DegreeLevel)
+            )
+            """)
+
+            # Create Goal_Course table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Goal_Course (
+                GoalCode VARCHAR(255),
+                DegreeName VARCHAR(255),
+                DegreeLevel VARCHAR(255),
+                CourseID VARCHAR(255),
+                PRIMARY KEY (GoalCode, DegreeName, DegreeLevel, CourseID),
+                FOREIGN KEY (GoalCode, DegreeName, DegreeLevel) REFERENCES Goal(GoalCode, DegreeName, DegreeLevel),
+                FOREIGN KEY (CourseID) REFERENCES Course(CourseID)
+            )
+            """)
+
+            # Create Instructor table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Instructor (
+                InstructorID VARCHAR(255) PRIMARY KEY,
+                InstructorName VARCHAR(255)
+            )
+            """)
+
+            # Create Section table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Section (
+                SectionID VARCHAR(255),
+                CourseID VARCHAR(255),
+                Semester VARCHAR(255),
+                Year INT,
+                NumStudents INT,
+                InstructorID VARCHAR(255),
+                PRIMARY KEY (SectionID, CourseID, Semester, Year),
+                FOREIGN KEY (CourseID) REFERENCES Course(CourseID),
+                FOREIGN KEY (InstructorID) REFERENCES Instructor(InstructorID)
+            )
+            """)
+
+            # Create Evaluation table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Evaluation (
+                GoalCode VARCHAR(255),
+                DegreeName VARCHAR(255),
+                DegreeLevel VARCHAR(255),
+                SectionID VARCHAR(255),
+                CourseID VARCHAR(255),
+                Semester VARCHAR(255),
+                Year INT,
+                EvaluationType VARCHAR(255),
+                A INT,
+                B INT,
+                C INT,
+                F INT,
+                ImprovementSuggestion TEXT,
+                PRIMARY KEY (GoalCode, DegreeName, DegreeLevel, SectionID, CourseID, Semester, Year),
+                FOREIGN KEY (GoalCode, DegreeName, DegreeLevel) REFERENCES Goal(GoalCode, DegreeName, DegreeLevel),
+                FOREIGN KEY (SectionID, CourseID, Semester, Year) REFERENCES Section(SectionID, CourseID, Semester, Year)
+            )
+            """)
+
+            self.connection.commit()
+            print("Tables created successfully.")
+        except Error as e:
+            print(f"Error creating tables: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
 
     def clear_tables(self) -> None:
         # TODO
