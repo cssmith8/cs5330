@@ -36,8 +36,8 @@ class Database:
             # Create Degree table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Degree (
-                DegreeName VARCHAR(255),
-                DegreeLevel VARCHAR(255),
+                DegreeName VARCHAR(64),
+                DegreeLevel VARCHAR(64),
                 PRIMARY KEY (DegreeName, DegreeLevel)
             )
             """)
@@ -45,17 +45,17 @@ class Database:
             # Create Course table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Course (
-                CourseID VARCHAR(255) PRIMARY KEY,
-                CourseName VARCHAR(255)
+                CourseID VARCHAR(64) PRIMARY KEY,
+                CourseName VARCHAR(64)
             )
             """)
 
             # Create Degree_Course table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Degree_Course (
-                DegreeName VARCHAR(255),
-                DegreeLevel VARCHAR(255),
-                CourseID VARCHAR(255),
+                DegreeName VARCHAR(64),
+                DegreeLevel VARCHAR(64),
+                CourseID VARCHAR(64),
                 IsCore BOOLEAN,
                 PRIMARY KEY (DegreeName, DegreeLevel, CourseID),
                 FOREIGN KEY (DegreeName, DegreeLevel) REFERENCES Degree(DegreeName, DegreeLevel),
@@ -66,9 +66,9 @@ class Database:
             # Create Goal table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Goal (
-                GoalCode VARCHAR(255),
-                DegreeName VARCHAR(255),
-                DegreeLevel VARCHAR(255),
+                GoalCode VARCHAR(64),
+                DegreeName VARCHAR(64),
+                DegreeLevel VARCHAR(64),
                 Description TEXT,
                 PRIMARY KEY (GoalCode, DegreeName, DegreeLevel),
                 FOREIGN KEY (DegreeName, DegreeLevel) REFERENCES Degree(DegreeName, DegreeLevel)
@@ -78,10 +78,10 @@ class Database:
             # Create Goal_Course table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Goal_Course (
-                GoalCode VARCHAR(255),
-                DegreeName VARCHAR(255),
-                DegreeLevel VARCHAR(255),
-                CourseID VARCHAR(255),
+                GoalCode VARCHAR(64),
+                DegreeName VARCHAR(64),
+                DegreeLevel VARCHAR(64),
+                CourseID VARCHAR(64),
                 PRIMARY KEY (GoalCode, DegreeName, DegreeLevel, CourseID),
                 FOREIGN KEY (GoalCode, DegreeName, DegreeLevel) REFERENCES Goal(GoalCode, DegreeName, DegreeLevel),
                 FOREIGN KEY (CourseID) REFERENCES Course(CourseID)
@@ -91,20 +91,20 @@ class Database:
             # Create Instructor table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Instructor (
-                InstructorID VARCHAR(255) PRIMARY KEY,
-                InstructorName VARCHAR(255)
+                InstructorID VARCHAR(64) PRIMARY KEY,
+                InstructorName VARCHAR(64)
             )
             """)
 
             # Create Section table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Section (
-                SectionID VARCHAR(255),
-                CourseID VARCHAR(255),
-                Semester VARCHAR(255),
+                SectionID VARCHAR(64),
+                CourseID VARCHAR(64),
+                Semester VARCHAR(64),
                 Year INT,
                 NumStudents INT,
-                InstructorID VARCHAR(255),
+                InstructorID VARCHAR(64),
                 PRIMARY KEY (SectionID, CourseID, Semester, Year),
                 FOREIGN KEY (CourseID) REFERENCES Course(CourseID),
                 FOREIGN KEY (InstructorID) REFERENCES Instructor(InstructorID)
@@ -114,14 +114,14 @@ class Database:
             # Create Evaluation table
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS Evaluation (
-                GoalCode VARCHAR(255),
-                DegreeName VARCHAR(255),
-                DegreeLevel VARCHAR(255),
-                SectionID VARCHAR(255),
-                CourseID VARCHAR(255),
-                Semester VARCHAR(255),
+                GoalCode VARCHAR(64),
+                DegreeName VARCHAR(64),
+                DegreeLevel VARCHAR(64),
+                SectionID VARCHAR(64),
+                CourseID VARCHAR(64),
+                Semester VARCHAR(64),
                 Year INT,
-                EvaluationType VARCHAR(255),
+                EvaluationType VARCHAR(64),
                 A INT,
                 B INT,
                 C INT,
@@ -138,6 +138,7 @@ class Database:
         except Error as e:
             print(f"Error creating tables: {e}")
             self.connection.rollback()
+            exit()
         finally:
             cursor.close()
 
@@ -269,4 +270,3 @@ class Database:
     def get_evaluations_from_section(self, sectionID: str, courseID: str, semester: str, year: int) -> list[Evaluation]:
         # TODO
         return None
-    

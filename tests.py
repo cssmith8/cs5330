@@ -2,6 +2,7 @@ from database import Database
 from classes import *
 
 def tests(db: Database) -> None:
+    print("Running tests...")
     db.create_tables()
     db.clear_tables()
     
@@ -10,5 +11,5 @@ def tests(db: Database) -> None:
 
     d2: Degree = db.get_degree("Computer Science", "BS")
 
-    assert d2 != None, "Failed: Degree is None."
+    assert d2 != None, "Failed: Did not get degree from table."
     assert d1 == d2, "Failed: Degrees do not match."
