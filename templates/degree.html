@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Manage Degrees</title>
+    </head>
+    <body>
+        <a href="/home">Back to home page</a>
+        <br>
+        <h1>Input Degree</h1>
+
+        <form id="dataForm">
+            <div>
+                <label for="degreeName">Degree Name</label>
+                <input type="text" id="degreeName" name="degreeName" required>
+                <span id="field1error" style="color: red"></span>
+                <br>
+                <label for="degreeLevel">Degree Level</label>
+                <input type="text" name="degreeLevel" id="degreeLevel">
+                <span id="field2error" style="color: red"></span>
+                <br>
+                <button type="submit">Submit</button>
+            </div>
+            <div>
+                <p id="result"></p>
+                <p id="field1error"></p>
+            </div>
+        </form>
+
+        <h2>Existing Degree Information</h2>
+        <div id="degrees">
+        </div>
+        
+        <a href="/home">Back to home page</a>
+
+        <script>
+            //degrees
+            fetch('/get_all_degrees')
+                .then(response => response.json())
+                .then(data => {
+                    const div = document.getElementById('degrees');
+                    data.degrees.forEach(option => {
+                        const pElement = document.createElement('p');
+                        pElement.textContent = option.degreeName + " " + option.degreeLevel;
+                        div.appendChild(pElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                fetch('/degree/form', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = 'Result: ' + data.result;
+                    if (data.invalid1) {
+                        document.getElementById('field1error').textContent = 'Invalid';
+                    }
+                    if (data.invalid2) {
+                        document.getElementById('field2error').textContent = 'Invalid';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        </script>
+    </body>
+</html>

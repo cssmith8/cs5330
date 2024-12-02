@@ -19,6 +19,9 @@ def login():
 def degree_courses():
     return render_template('dcinput.html')
 
+@app.route('/degree')
+def degree():
+    return render_template('degree.html')
 
 ################################ Form routes
 
@@ -50,6 +53,18 @@ def dcinput_form():
 
     return jsonify({"result": str(isCore)})
 
+@app.route('/degree/form', methods=['POST'])
+def degree_form():
+    degreeName: str = request.form.get('degreeName')
+    degreeLevel: str = request.form.get('degreeLevel')
+
+    # input validation here
+
+    degree: Degree = Degree(degreeName, degreeLevel)
+    Data._instance.db.insert_degree(degree)
+
+    return jsonify({"result": "success", "invalid1": False, "invalid2": False})
+
 
 
 ################################ Backend routes
@@ -68,6 +83,14 @@ def get_all_courses():
     r = []
     for course in courses:
         r.append({'courseID': course.courseID, 'courseName': course.courseName})
+    return jsonify({'courses': r})
+
+@app.route('/get_all_degree_courses')
+def get_all_degree_courses():
+    degreeCourses: list[DegreeCourse] = Data._instance.db.get_all_degree_courses()
+    r = []
+    for dc in degreeCourses:
+        r.append({'courseID': dc.courseID, 'degreeName': dc.degreeName, 'degreeLevel': dc.degreeLevel, 'isCore': dc.isCore})
     return jsonify({'courses': r})
 
 @app.route('/get_options')

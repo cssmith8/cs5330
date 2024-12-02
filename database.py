@@ -282,3 +282,24 @@ class Database:
         # TODO
         # sample return for now
         return [Course("CS101", "Intro to Computer Science"), Course("CS102", "Data Structures"), Course("CS103", "Algorithms")]
+    
+    # get all degree courses
+    def get_all_degree_courses(self) -> list[DegreeCourse]:
+        # TODO
+        # sample return for now
+        return [DegreeCourse("Computer Science", "BS", "CS101", True), DegreeCourse("Computer Science", "BS", "CS102", True), DegreeCourse("Computer Science", "BS", "CS103", False)]
+    
+    # get all goals
+    def get_all_goals(self) -> list[Goal]:
+        # TODO
+        return None
+    
+    # get all goal courses
+    def get_all_goal_courses(self) -> list[GoalCourse]:
+        # TODO
+        return None
+    
+    # get all instructors
+    def get_all_instructors(self) -> list[Instructor]:
+        # TODO
+        return None
