@@ -273,8 +273,12 @@ class Database:
     
     # get all degrees
     def get_all_degrees(self) -> list[Degree]:
+        # TODO
+        # sample return for now
         return [Degree("Computer Science", "BS"), Degree("Computer Science", "MS"), Degree("Data Science", "PhD")]
     
     # get all courses
     def get_all_courses(self) -> list[Course]:
+        # TODO
+        # sample return for now
         return [Course("CS101", "Intro to Computer Science"), Course("CS102", "Data Structures"), Course("CS103", "Algorithms")]
