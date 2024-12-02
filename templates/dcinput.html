@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Degree Course Input</title>
+    </head>
+    <body>
+        <h1>Degree Course Input</h1>
+
+        <form id="dataForm">
+            <div>
+                <label for="degreedd">Input Degree</label>
+                <select name="degreedd" id="degreedd" required>
+                </select>
+                <br>
+                <label for="coursedd">Input Course</label>
+                <select name="coursedd" id="coursedd" required>
+                </select>
+                <br>
+                <label for="isCore">Is Core</label>
+                <input type="checkbox" name="isCore" id="isCore">
+                <br>
+                <button type="submit">Submit</button>
+            </div>
+            <div>
+                <p id="result"></p>
+                <p id="field1error"></p>
+            </div>
+        </form>
+        
+        <a href="/home">Back</a>
+
+        <script>
+            //degrees
+            var degrees = [];
+            fetch('/get_all_degrees')
+                .then(response => response.json())
+                .then(data => {
+                    degrees = data.degrees;
+                    const dropdown = document.getElementById('degreedd');
+                    data.degrees.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = degrees.indexOf(option);
+                        optionElement.textContent = option.degreeName + " " + option.degreeLevel;
+                        dropdown.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            //courses
+            var courses = [];
+            fetch('/get_all_courses')
+                .then(response => response.json())
+                .then(data => {
+                    courses = data.courses;
+                    const dropdown = document.getElementById('coursedd');
+                    data.courses.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = courses.indexOf(option);
+                        optionElement.textContent = option.courseID + " " + option.courseName;
+                        dropdown.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const degreeIndex = document.getElementById('degreedd').value;
+                const courseIndex = document.getElementById('coursedd').value;
+                const selectedDegree = degrees[degreeIndex];
+                const selectedCourse = courses[courseIndex];
+                const isCore = document.getElementById('isCore').checked;
+                
+                const formData = new FormData();
+                formData.append('degree', JSON.stringify(selectedDegree));
+                formData.append('course', JSON.stringify(selectedCourse));
+                formData.append('isCore', isCore);
+                
+                fetch('/dcinput/form', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = 'Result: ' + data.result;
+                    if (data.invalid1) {
+                        document.getElementById('field1error').textContent = 'Invalid';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        </script>
+    </body>
+</html>

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 
 class Degree:
     # (key) degreeName: str
@@ -27,12 +28,12 @@ class Degree:
 class DegreeCourse:
     # (key) degreeName: str
     # (key) degreeLevel: str
-    # (key) courseID: int
+    # (key) courseID: str
     # isCore: bool
-    def __init__(self, degreeName: str, degreeLevel: str, courseID: int, isCore: bool):
+    def __init__(self, degreeName: str, degreeLevel: str, courseID: str, isCore: bool):
         self.degreeName: str = degreeName
         self.degreeLevel: str = degreeLevel
-        self.courseID: int = courseID
+        self.courseID: str = courseID
         self.isCore: bool = isCore
     
     # get the attached degree from the database

@@ -270,3 +270,11 @@ class Database:
     def get_evaluations_from_section(self, sectionID: str, courseID: str, semester: str, year: int) -> list[Evaluation]:
         # TODO
         return None
+    
+    # get all degrees
+    def get_all_degrees(self) -> list[Degree]:
+        return [Degree("Computer Science", "BS"), Degree("Computer Science", "MS"), Degree("Data Science", "PhD")]
+    
+    # get all courses
+    def get_all_courses(self) -> list[Course]:
+        return [Course("CS101", "Intro to Computer Science"), Course("CS102", "Data Structures"), Course("CS103", "Algorithms")]
