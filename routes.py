@@ -23,6 +23,10 @@ def degree_courses():
 def degree():
     return render_template('degree.html')
 
+@app.route('/goal')
+def goal():
+    return render_template('goal.html')
+
 ################################ Form routes
 
 @app.route('/home/process', methods=['POST'])
@@ -65,6 +69,20 @@ def degree_form():
 
     return jsonify({"result": "success", "invalid1": False, "invalid2": False})
 
+@app.route('/goal/form', methods=['POST'])
+def goal_form():
+    input_degree = json.loads(request.form.get('degree'))
+    goalCode: str = request.form.get('goalCode')
+    description: str = request.form.get('goalDesc')
+
+    # input validation here
+
+    # degree: Degree = Degree(degreeName, degreeLevel)
+    goal: Goal = Goal(goalCode, input_degree.get('degreeName'), input_degree.get('degreeLevel'), description)
+    Data._instance.db.insert_goal(goal)
+
+    return jsonify({"result": goalCode + " " + input_degree.get('degreeName'), "invalid1": False, "invalid2": False})
+
 
 
 ################################ Backend routes
@@ -92,6 +110,14 @@ def get_all_degree_courses():
     for dc in degreeCourses:
         r.append({'courseID': dc.courseID, 'degreeName': dc.degreeName, 'degreeLevel': dc.degreeLevel, 'isCore': dc.isCore})
     return jsonify({'courses': r})
+
+@app.route('/get_all_goals')
+def get_all_goals():
+    goals: list[Goal] = Data._instance.db.get_all_goals()
+    r = []
+    for goal in goals:
+        r.append({'degreeName': goal.degreeName, 'degreeLevel': goal.degreeLevel, 'goalCode': goal.goalCode, 'description': goal.description})
+    return jsonify({'goals': r})
 
 @app.route('/get_options')
 def get_options():

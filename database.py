@@ -292,7 +292,8 @@ class Database:
     # get all goals
     def get_all_goals(self) -> list[Goal]:
         # TODO
-        return None
+        # sample return for now
+        return [Goal("Goal1", "Computer Science", "BS", "Description 1"), Goal("Goal2", "Computer Science", "BS", "Description 2"), Goal("Goal3", "Computer Science", "BS", "Description 3")]
     
     # get all goal courses
     def get_all_goal_courses(self) -> list[GoalCourse]:

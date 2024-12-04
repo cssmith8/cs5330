@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Degree Course Input</title>
+        <title>Goal Input</title>
     </head>
     <body>
         <a href="/home">Back to home page</a>
         <br>
-        <h1>Degree Course Input</h1>
+        <h1>Goal Input</h1>
 
         <form id="dataForm">
             <div>
-                <label for="degreedd">Input Degree</label>
+                <label for="degreedd">Degree</label>
                 <select name="degreedd" id="degreedd" required>
                 </select>
                 <br>
-                <label for="coursedd">Input Course</label>
-                <select name="coursedd" id="coursedd" required>
-                </select>
+                <label for="goalCode">Goal Code</label>
+                <input type="text" id="goalCode" name="goalCode" required>
+                <span id="field1error" style="color: red"></span>
                 <br>
-                <label for="isCore">Is Core</label>
-                <input type="checkbox" name="isCore" id="isCore">
+                <label for="goalDesc">Goal Description</label>
+                <input type="text" name="goalDesc" id="goalDesc">
+                <span id="field2error" style="color: red"></span>
                 <br>
                 <button type="submit">Submit</button>
             </div>
             <div>
                 <p id="result"></p>
-                <p id="field1error"></p>
             </div>
         </form>
 
-        <h2>Existing Degree-Course Information</h2>
-        <div id="degreeCourses">
+        <h2>Existing Goal Information</h2>
+        <div id="goals">
         </div>
         
         <a href="/home">Back to home page</a>
@@ -51,30 +51,14 @@
                     });
                 })
                 .catch(error => console.error('Error:', error));
-            
-            //courses
-            var courses = [];
-            fetch('/get_all_courses')
+        
+            fetch('/get_all_goals')
                 .then(response => response.json())
                 .then(data => {
-                    courses = data.courses;
-                    const dropdown = document.getElementById('coursedd');
-                    data.courses.forEach(option => {
-                        const optionElement = document.createElement('option');
-                        optionElement.value = courses.indexOf(option);
-                        optionElement.textContent = option.courseID + " " + option.courseName;
-                        dropdown.appendChild(optionElement);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-            
-            fetch('/get_all_degree_courses')
-                .then(response => response.json())
-                .then(data => {
-                    const div = document.getElementById('degreeCourses');
-                    data.courses.forEach(option => {
+                    const div = document.getElementById('goals');
+                    data.goals.forEach(option => {
                         const pElement = document.createElement('p');
-                        pElement.textContent = option.degreeName + " " + option.degreeLevel + ": " + option.courseID + " (Is Core: " + option.isCore + ")";
+                        pElement.textContent = "[" + option.degreeName + " " + option.degreeLevel + "] " + option.goalCode + ": " + option.description;
                         div.appendChild(pElement);
                     });
                 })
@@ -83,17 +67,16 @@
             document.getElementById('dataForm').addEventListener('submit', function(event) {
                 event.preventDefault();
                 const degreeIndex = document.getElementById('degreedd').value;
-                const courseIndex = document.getElementById('coursedd').value;
                 const selectedDegree = degrees[degreeIndex];
-                const selectedCourse = courses[courseIndex];
-                const isCore = document.getElementById('isCore').checked;
+                const goalCode = document.getElementById('goalCode').value;
+                const goalDesc = document.getElementById('goalDesc').value;
                 
                 const formData = new FormData();
                 formData.append('degree', JSON.stringify(selectedDegree));
-                formData.append('course', JSON.stringify(selectedCourse));
-                formData.append('isCore', isCore);
+                formData.append('goalCode', goalCode);
+                formData.append('goalDesc', goalDesc);
                 
-                fetch('/dcinput/form', {
+                fetch('/goal/form', {
                     method: 'POST',
                     body: formData
                 })
