@@ -1,6 +1,12 @@
-h1 {
+.hometitle {
     border: 2px #eee solid;
     color: brown;
     text-align: center;
     padding: 10px;
+}
+
+/* make the default font style to be a clearly readable font */
+
+body {
+    font-family: Arial, sans-serif;
 }

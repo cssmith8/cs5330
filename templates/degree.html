@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <title>Manage Degrees</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
     </head>
     <body>
         <a href="/home">Back to home page</a>
@@ -38,7 +39,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const div = document.getElementById('degrees');
-                    data.degrees.forEach(option => {
+                    data.content.forEach(option => {
                         const pElement = document.createElement('p');
                         pElement.textContent = option.degreeName + " " + option.degreeLevel;
                         div.appendChild(pElement);

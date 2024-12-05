@@ -5,14 +5,12 @@
         <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
     </head>
     <body>
-        <h1>Home page</h1>
+        <h1 class="hometitle">Home page</h1>
 
-        <a href="/degree">Manage Degrees</a>
-        <br>
-        <a href="/degree_courses">Degree-Course</a>
-        <br>
-        <a href="/goal">Manage Goals</a>
-        <br>
+        <a href="/degree">Manage Degrees</a><br>
+        <a href="/degree_courses">Degree-Course</a><br>
+        <a href="/goal">Manage Goals</a><br>
+        <a href="/goal_courses">Goal-Course</a><br>
 
         <p>Sample Form:</p>
         <form id="dataForm">
@@ -38,7 +36,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const dropdown = document.getElementById('dropdown');
-                    data.options.forEach(option => {
+                    data.content.forEach(option => {
                         const optionElement = document.createElement('option');
                         optionElement.value = option;
                         optionElement.textContent = option;

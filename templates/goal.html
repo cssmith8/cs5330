@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <title>Goal Input</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
     </head>
     <body>
         <a href="/home">Back to home page</a>
@@ -41,9 +42,9 @@
             fetch('/get_all_degrees')
                 .then(response => response.json())
                 .then(data => {
-                    degrees = data.degrees;
+                    degrees = data.content;
                     const dropdown = document.getElementById('degreedd');
-                    data.degrees.forEach(option => {
+                    data.content.forEach(option => {
                         const optionElement = document.createElement('option');
                         optionElement.value = degrees.indexOf(option);
                         optionElement.textContent = option.degreeName + " " + option.degreeLevel;
@@ -56,7 +57,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const div = document.getElementById('goals');
-                    data.goals.forEach(option => {
+                    data.content.forEach(option => {
                         const pElement = document.createElement('p');
                         pElement.textContent = "[" + option.degreeName + " " + option.degreeLevel + "] " + option.goalCode + ": " + option.description;
                         div.appendChild(pElement);

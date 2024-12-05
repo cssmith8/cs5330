@@ -11,13 +11,13 @@ options: list = ['option1', 'option7', 'option3']
 def home():
     return render_template('home.html')
 
-@app.route('/login')
-def login():
-    return render_template('login.html')
-
 @app.route('/degree_courses')
 def degree_courses():
     return render_template('dcinput.html')
+
+@app.route('/goal_courses')
+def goal_courses():
+    return render_template('gcinput.html')
 
 @app.route('/degree')
 def degree():
@@ -26,6 +26,8 @@ def degree():
 @app.route('/goal')
 def goal():
     return render_template('goal.html')
+
+
 
 ################################ Form routes
 
@@ -83,6 +85,16 @@ def goal_form():
 
     return jsonify({"result": goalCode + " " + input_degree.get('degreeName'), "invalid1": False, "invalid2": False})
 
+@app.route('/gcinput/form', methods=['POST'])
+def gcinput_form():
+    input_goal = json.loads(request.form.get('goal'))
+    input_course = json.loads(request.form.get('course'))
+
+    gc: GoalCourse = GoalCourse(input_goal.get('goalCode'), input_goal.get('degreeName'), input_goal.get('degreeLevel'), input_course.get("courseID"))
+    Data._instance.db.insert_goal_course(gc)
+
+    return jsonify({"result": gc.courseID + " - " + gc.goalCode})
+
 
 
 ################################ Backend routes
@@ -90,39 +102,57 @@ def goal_form():
 @app.route('/get_all_degrees')
 def get_all_degrees():
     degrees: list[Degree] = Data._instance.db.get_all_degrees()
+    if not degrees:
+        return jsonify({'content': []})
     r = []
     for degree in degrees:
         r.append({'degreeName': degree.degreeName, 'degreeLevel': degree.degreeLevel})
-    return jsonify({'degrees': r})
+    return jsonify({'content': r})
 
 @app.route('/get_all_courses')
 def get_all_courses():
     courses: list[Course] = Data._instance.db.get_all_courses()
+    if not courses:
+        return jsonify({'content': []})
     r = []
     for course in courses:
         r.append({'courseID': course.courseID, 'courseName': course.courseName})
-    return jsonify({'courses': r})
+    return jsonify({'content': r})
 
 @app.route('/get_all_degree_courses')
 def get_all_degree_courses():
     degreeCourses: list[DegreeCourse] = Data._instance.db.get_all_degree_courses()
+    if not degreeCourses:
+        return jsonify({'content': []})
     r = []
     for dc in degreeCourses:
         r.append({'courseID': dc.courseID, 'degreeName': dc.degreeName, 'degreeLevel': dc.degreeLevel, 'isCore': dc.isCore})
-    return jsonify({'courses': r})
+    return jsonify({'content': r})
 
 @app.route('/get_all_goals')
 def get_all_goals():
     goals: list[Goal] = Data._instance.db.get_all_goals()
+    if not goals:
+        return jsonify({'content': []})
     r = []
     for goal in goals:
         r.append({'degreeName': goal.degreeName, 'degreeLevel': goal.degreeLevel, 'goalCode': goal.goalCode, 'description': goal.description})
-    return jsonify({'goals': r})
+    return jsonify({'content': r})
+
+@app.route('/get_all_goal_courses')
+def get_all_goal_courses():
+    goalCourses: list[GoalCourse] = Data._instance.db.get_all_goal_courses()
+    if not goalCourses:
+        return jsonify({'content': []})
+    r = []
+    for gc in goalCourses:
+        r.append({'courseID': gc.courseID, 'goalCode': gc.goalCode, 'degreeName': gc.degreeName, 'degreeLevel': gc.degreeLevel})
+    return jsonify({'content': r})
 
 @app.route('/get_options')
 def get_options():
     print("real " + str(Data._instance.db.is_connected()))
-    return jsonify({'options': options})
+    return jsonify({'content': options})
 
 
 
