@@ -264,92 +264,316 @@ class Database:
     # Inserts an evaluation into the database
     def insert_evaluation(self, evaluation: Evaluation) -> None:
         cursor = self.connection.cursor()  
-        
+        #TODO
 
     # gets a degree from the database given all the key attributes
     def get_degree(self, degreeName: str, degreeLevel: str) -> Degree:
-        # TODO
-        return None
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Degree WHERE DegreeName = %s AND DegreeLevel = %s", (degreeName, degreeLevel))
+            result = cursor.fetchone()
+            if result is not None:
+                return Degree(result[0], result[1])
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting degree: {e}")
+            return None
+        finally:
+            cursor.close()
+    
 
     # gets a degree course from the database given all the key attributes
     def get_degree_course(self, degreeName: str, degreeLevel: str, courseID: int) -> DegreeCourse:
-        # TODO
-        return None
+        
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Degree_Course WHERE DegreeName = %s AND DegreeLevel = %s AND CourseID = %s", (degreeName, degreeLevel, courseID))
+            result = cursor.fetchone()
+            if result is not None:
+                return DegreeCourse(result[0], result[1], result[2], result[3])
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting degree course: {e}")
+            return None
+        finally:
+            cursor.close()
+
 
     # gets a course from the database given all the key attributes
     def get_course(self, courseID: str) -> Course:
-        # TODO
-        return None
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Course WHERE CourseID = %s", (courseID,))
+            result = cursor.fetchone()
+            if result is not None:
+                return Course(result[0], result[1])
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting course: {e}")
+            return None
+        finally:
+            cursor.close()
 
     # gets a section from the database given all the key attributes
     def get_section(self, sectionID: str, courseID: str, semester: str, year: int) -> Section:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Section WHERE SectionID = %s AND CourseID = %s AND Semester = %s AND Year = %s", (sectionID, courseID, semester, year))
+            result = cursor.fetchone()
+            if result is not None:
+                return Section(result[0], result[1], result[2], result[3], result[4], result[5])
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting section: {e}")
+            return None
+        finally:
+            cursor.close()
 
     # gets an instructor from the database given all the key attributes
     def get_instructor(self, instructorID: str) -> Instructor:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Instructor WHERE InstructorID = %s", (instructorID,))
+            result = cursor.fetchone()
+            if result is not None:
+                return Instructor(result[0], result[1])
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting instructor: {e}")
+            return None
+        finally:
+            cursor.close()
 
     # gets a goal from the database given all the key attributes
     def get_goal(self, goalCode: str, degreeName: str, degreeLevel: str) -> Goal:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Goal WHERE GoalCode = %s AND DegreeName = %s AND DegreeLevel = %s", (goalCode, degreeName, degreeLevel))
+            result = cursor.fetchone()
+            if result is not None:
+                return Goal(result[0], result[1], result[2], result[3])
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting goal: {e}")
+            return None
+        finally:
+            cursor.close()
 
     # gets a goal course from the database given all the key attributes
     def get_goal_course(self, goalCode: str, degreeName: str, degreeLevel: str, courseID: str) -> GoalCourse:
-        # TODO
-        return None
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Goal_Course WHERE GoalCode = %s AND DegreeName = %s AND DegreeLevel = %s AND CourseID = %s", (goalCode, degreeName, degreeLevel, courseID))
+            result = cursor.fetchone()
+            if result is not None:
+                return GoalCourse(result[0], result[1], result[2], result[3])
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting goal course: {e}")
+            return None
+        finally:
+            cursor.close()
 
     # gets an evaluation from the database given all the key attributes
     def get_evaluation(self, goalCode: str, degreeName: str, degreeLevel: str, sectionID: str, courseID: str, semester: str, year: int) -> Evaluation:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Evaluation WHERE GoalCode = %s AND DegreeName = %s AND DegreeLevel = %s AND SectionID = %s AND CourseID = %s AND Semester = %s AND Year = %s", (goalCode, degreeName, degreeLevel, sectionID, courseID, semester, year))
+            result = cursor.fetchone()
+            if result is not None:
+                return Evaluation(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10], result[11])
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting evaluation: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # gets all degree courses from the database given degreeName and degreeLevel
     def get_degree_courses_from_degree(self, degreeName: str, degreeLevel: str) -> list[DegreeCourse]:
-        # TODO
-        return None
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Degree_Course WHERE DegreeName = %s AND DegreeLevel = %s", (degreeName, degreeLevel))
+            result = cursor.fetchall()
+            if result is not None:
+                degreeCourses = []
+                for row in result:
+                    degreeCourses.append(DegreeCourse(row[0], row[1], row[2], row[3]))
+                return degreeCourses
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting degree courses: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # gets all degree courses from the database given courseID
     def get_degree_courses_from_course(self, courseID: str) -> list[DegreeCourse]:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Degree_Course WHERE CourseID = %s", (courseID,))
+            result = cursor.fetchall()
+            if result is not None:
+                degreeCourses = []
+                for row in result:
+                    degreeCourses.append(DegreeCourse(row[0], row[1], row[2], row[3]))
+                return degreeCourses
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting degree courses: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # gets all goals from the database given degreeName and degreeLevel
     def get_goals_from_degree(self, degreeName: str, degreeLevel: str) -> list[Goal]:
-        # TODO
-        return None
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Goal WHERE DegreeName = %s AND DegreeLevel = %s", (degreeName, degreeLevel))
+            result = cursor.fetchall()
+            if result is not None:
+                goals = []
+                for row in result:
+                    goals.append(Goal(row[0], row[1], row[2], row[3]))
+                return goals
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting goals: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # gets all goal courses from the database given goalCode, degreeName, and degreeLevel
     def get_goal_courses_from_goal(self, goalCode: str, degreeName: str, degreeLevel: str) -> list[GoalCourse]:
-        # TODO
-        return None
+            
+            cursor = self.connection.cursor()
+            try:
+                cursor.execute("SELECT * FROM Goal_Course WHERE GoalCode = %s AND DegreeName = %s AND DegreeLevel = %s", (goalCode, degreeName, degreeLevel))
+                result = cursor.fetchall()
+                if result is not None:
+                    goalCourses = []
+                    for row in result:
+                        goalCourses.append(GoalCourse(row[0], row[1], row[2], row[3]))
+                    return goalCourses
+                else:
+                    return None
+            except Error as e:
+                print(f"Error getting goal courses: {e}")
+                return None
+            finally:
+                cursor.close()
     
     # gets all goal courses from the database given courseID
     def get_goal_courses_from_course(self, courseID: str) -> list[GoalCourse]:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Goal_Course WHERE CourseID = %s", (courseID,))
+            result = cursor.fetchall()
+            if result is not None:
+                goalCourses = []
+                for row in result:
+                    goalCourses.append(GoalCourse(row[0], row[1], row[2], row[3]))
+                return goalCourses
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting goal courses: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all sections from the database given courseID
     def get_sections_from_course(self, courseID: str) -> list[Section]:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Section WHERE CourseID = %s", (courseID,))
+            result = cursor.fetchall()
+            if result is not None:
+                sections = []
+                for row in result:
+                    sections.append(Section(row[0], row[1], row[2], row[3], row[4], row[5]))
+                return sections
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting sections: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all sections from the database given instructorID
     def get_sections_from_instructor(self, instructorID: str) -> list[Section]:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Section WHERE InstructorID = %s", (instructorID,))
+            result = cursor.fetchall()
+            if result is not None:
+                sections = []
+                for row in result:
+                    sections.append(Section(row[0], row[1], row[2], row[3], row[4], row[5]))
+                return sections
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting sections: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all evaluations from the database given goalCode, DegreeName, and DegreeLevel
     def get_evaluations_from_goal(self, goalCode: str, degreeName: str, degreeLevel: str) -> list[Evaluation]:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Evaluation WHERE GoalCode = %s AND DegreeName = %s AND DegreeLevel = %s", (goalCode, degreeName, degreeLevel))
+            result = cursor.fetchall()
+            if result is not None:
+                evaluations = []
+                for row in result:
+                    evaluations.append(Evaluation(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11]))
+                return evaluations
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting evaluations: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all evaluations from the database given SectionID, CourseID, Semester, and Year
     def get_evaluations_from_section(self, sectionID: str, courseID: str, semester: str, year: int) -> list[Evaluation]:
-        # TODO
-        return None
+        
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Evaluation WHERE SectionID = %s AND CourseID = %s AND Semester = %s AND Year = %s", (sectionID, courseID, semester, year))
+            result = cursor.fetchall()
+            if result is not None:
+                evaluations = []
+                for row in result:
+                    evaluations.append(Evaluation(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11]))
+                return evaluations
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting evaluations: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all degrees
     def get_all_degrees(self) -> list[Degree]:
