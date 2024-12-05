@@ -143,48 +143,128 @@ class Database:
             cursor.close()
 
     def clear_tables(self) -> None:
-        # TODO
-        return
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("DROP TABLE IF EXISTS Evaluation")
+            cursor.execute("DROP TABLE IF EXISTS Section")
+            cursor.execute("DROP TABLE IF EXISTS Instructor")
+            cursor.execute("DROP TABLE IF EXISTS Goal_Course")
+            cursor.execute("DROP TABLE IF EXISTS Goal")
+            cursor.execute("DROP TABLE IF EXISTS Degree_Course")
+            cursor.execute("DROP TABLE IF EXISTS Course")
+            cursor.execute("DROP TABLE IF EXISTS Degree")
+            self.connection.commit()
+            print("Tables cleared successfully.")
+        except Error as e:
+            print(f"Error clearing tables: {e}")
+            self.connection.rollback()
+            exit()
+        finally:
+            cursor.close()
+    
 
     # Inserts a degree into the database
     def insert_degree(self, degree: Degree) -> None:
-        # TODO
-        return
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("INSERT INTO Degree (DegreeName, DegreeLevel) VALUES (%s, %s)", (degree.degreeName, degree.degreeLevel))
+            self.connection.commit()
+            print(f"Degree {degree.degreeName} {degree.degreeLevel} inserted successfully.")
+        except Error as e:
+            print(f"Error inserting degree: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
 
     # Inserts a degree course into the database
     def insert_degree_course(self, degreeCourse: DegreeCourse) -> None:
-        # TODO
-        return
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("INSERT INTO Degree_Course (DegreeName, DegreeLevel, CourseID, IsCore) VALUES (%s, %s, %s, %s)", (degreeCourse.degreeName, degreeCourse.degreeLevel, degreeCourse.courseID, degreeCourse.isCore))
+            self.connection.commit()
+            print(f"Degree course {degreeCourse.degreeName} {degreeCourse.degreeLevel} {degreeCourse.courseID} inserted successfully.")
+        except Error as e:
+            print(f"Error inserting degree course: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
 
     # Inserts a course into the database
     def insert_course(self, course: Course) -> None:
-        # TODO
-        return
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("INSERT INTO Course (CourseID, CourseName) VALUES (%s, %s)", (course.courseID, course.courseName))
+            self.connection.commit()
+            print(f"Course {course.courseID} inserted successfully.")
+        except Error as e:
+            print(f"Error inserting course: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
+
 
     # Inserts a section into the database
     def insert_section(self, section: Section) -> None:
-        # TODO
-        return
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("INSERT INTO Section (SectionID, CourseID, Semester, Year, NumStudents, InstructorID) VALUES (%s, %s, %s, %s, %s, %s)", (section.sectionID, section.courseID, section.semester, section.year, section.numStudents, section.instructorID))
+            self.connection.commit()
+            print(f"Section {section.sectionID} inserted successfully.")
+        except Error as e:
+            print(f"Error inserting section: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
+
 
     # Inserts an instructor into the database
     def insert_instructor(self, instructor: Instructor) -> None:
-        # TODO
-        return
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("INSERT INTO Instructor (InstructorID, InstructorName) VALUES (%s, %s)", (instructor.instructorID, instructor.instructorName))
+            self.connection.commit()
+            print(f"Instructor {instructor.instructorID} inserted successfully.")
+        except Error as e:
+            print(f"Error inserting instructor: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
+
 
     # Inserts a goal into the database
     def insert_goal(self, goal: Goal) -> None:
-        # TODO
-        return
+        
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("INSERT INTO Goal (GoalCode, DegreeName, DegreeLevel, Description) VALUES (%s, %s, %s, %s)", (goal.goalCode, goal.degreeName, goal.degreeLevel, goal.description))
+            self.connection.commit()
+            print(f"Goal {goal.goalCode} {goal.degreeName} {goal.degreeLevel} inserted successfully.")
+        except Error as e:
+            print(f"Error inserting goal: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
+
 
     # Inserts a goal course into the database
     def insert_goal_course(self, goalCourse: GoalCourse) -> None:
-        # TODO
-        return
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("INSERT INTO Goal_Course (GoalCode, DegreeName, DegreeLevel, CourseID) VALUES (%s, %s, %s, %s)", (goalCourse.goalCode, goalCourse.degreeName, goalCourse.degreeLevel, goalCourse.courseID))
+            self.connection.commit()
+            print(f"Goal course {goalCourse.goalCode} {goalCourse.degreeName} {goalCourse.degreeLevel} {goalCourse.courseID} inserted successfully.")
+        except Error as e:
+            print(f"Error inserting goal course: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
+
 
     # Inserts an evaluation into the database
     def insert_evaluation(self, evaluation: Evaluation) -> None:
-        # TODO
-        return
+        cursor = self.connection.cursor()  
+        
 
     # gets a degree from the database given all the key attributes
     def get_degree(self, degreeName: str, degreeLevel: str) -> Degree:
