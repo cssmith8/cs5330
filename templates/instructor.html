@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Manage Instructors</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    </head>
+    <body>
+        <a href="/home">Back to home page</a>
+        <br>
+        <h1>Input Instructor</h1>
+
+        <form id="dataForm">
+            <div>
+                <label for="instructorName">Instructor Name</label>
+                <input type="text" id="instructorName" name="instructorName" required>
+                <span id="field1error" style="color: red"></span>
+                <br>
+                <label for="instructorID">Instructor ID</label>
+                <input type="text" name="instructorID" id="instructorID">
+                <span id="field2error" style="color: red"></span>
+                <br>
+                <button type="submit">Submit</button>
+            </div>
+            <div>
+                <p id="result"></p>
+                <p id="field1error"></p>
+            </div>
+        </form>
+
+        <h2>Existing Degree Information</h2>
+        <div id="instructors">
+        </div>
+        
+        <a href="/home">Back to home page</a>
+
+        <script>
+            //instructors
+            fetch('/get_all_instructors')
+                .then(response => response.json())
+                .then(data => {
+                    const div = document.getElementById('instructors');
+                    data.content.forEach(option => {
+                        const pElement = document.createElement('p');
+                        pElement.textContent = option.instructorID + " " + option.instructorName;
+                        div.appendChild(pElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                fetch('/instructor/form', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = 'Result: ' + data.result;
+                    if (data.invalid1) {
+                        document.getElementById('field1error').textContent = 'Invalid';
+                    }
+                    if (data.invalid2) {
+                        document.getElementById('field2error').textContent = 'Invalid';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        </script>
+    </body>
+</html>

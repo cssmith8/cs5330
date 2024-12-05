@@ -27,6 +27,10 @@ def degree():
 def goal():
     return render_template('goal.html')
 
+@app.route('/instructor')
+def instructor():
+    return render_template('instructor.html')
+
 
 
 ################################ Form routes
@@ -95,6 +99,18 @@ def gcinput_form():
 
     return jsonify({"result": gc.courseID + " - " + gc.goalCode})
 
+@app.route('/instructor/form', methods=['POST'])
+def instructor_form():
+    instructorName: str = request.form.get('instructorName')
+    instructorID: str = request.form.get('instructorID')
+
+    # input validation here
+
+    instructor: Instructor = Instructor(instructorID, instructorName)
+    Data._instance.db.insert_instructor(instructor)
+
+    return jsonify({"result": "instructor success " + instructorName, "invalid1": False, "invalid2": False})
+
 
 
 ################################ Backend routes
@@ -147,6 +163,16 @@ def get_all_goal_courses():
     r = []
     for gc in goalCourses:
         r.append({'courseID': gc.courseID, 'goalCode': gc.goalCode, 'degreeName': gc.degreeName, 'degreeLevel': gc.degreeLevel})
+    return jsonify({'content': r})
+
+@app.route('/get_all_instructors')
+def get_all_instructors():
+    instructors: list[Instructor] = Data._instance.db.get_all_instructors()
+    if not instructors:
+        return jsonify({'content': []})
+    r = []
+    for instructor in instructors:
+        r.append({'instructorID': instructor.instructorID, 'instructorName': instructor.instructorName})
     return jsonify({'content': r})
 
 @app.route('/get_options')
