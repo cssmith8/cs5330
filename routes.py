@@ -231,7 +231,6 @@ def get_all_instructors():
 
 @app.route('/get_options')
 def get_options():
-    print("real " + str(Data._instance.db.is_connected()))
     return jsonify({'content': options})
 
 
