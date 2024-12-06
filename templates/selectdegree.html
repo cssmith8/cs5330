@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Query Degree</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    </head>
+    <body>
+        <a href="/home">Back to home page</a>
+        <br>
+        <h1>Query Degree</h1>
+
+        <form id="dataForm">
+            <div>
+                <label for="degreedd">Input Degree</label>
+                <select name="degreedd" id="degreedd" required>
+                </select>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+
+        <h2>Associated Courses</h2>
+        <div id="associatedCourses">
+        </div>
+
+        <h2>Associated Goals</h2>
+        <div id="associatedGoals">
+        </div>
+
+        <form id="dataForm2">
+            <div>
+                <label for="goaldd">View courses of goal</label>
+                <select name="goaldd" id="goaldd" required>
+                </select>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+
+        <div id="associatedCourses2">
+        </div>
+
+        <br>
+        
+        <a href="/home">Back to home page</a>
+
+        <script>
+            var goals = [];
+            //degrees
+            var degrees = [];
+            fetch('/get_all_degrees')
+                .then(response => response.json())
+                .then(data => {
+                    degrees = data.content;
+                    const dropdown = document.getElementById('degreedd');
+                    data.content.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = degrees.indexOf(option);
+                        optionElement.textContent = option.degreeName + " " + option.degreeLevel;
+                        dropdown.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const degreeIndex = document.getElementById('degreedd').value;
+                const selectedDegree = degrees[degreeIndex];
+                
+                const formData = new FormData();
+                formData.append('degree', JSON.stringify(selectedDegree));
+                
+                fetch('/selectdegree/form', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    courses = data.courses;
+                    const associatedCourses = document.getElementById('associatedCourses');
+                    //clear the previous courses
+                    associatedCourses.innerHTML = "";
+                    courses.forEach(course => {
+                        const courseElement = document.createElement('p');
+                        courseElement.textContent = course.courseID + ", Core: " +  course.isCore;
+                        associatedCourses.appendChild(courseElement);
+                    });
+                    goals = data.goals;
+                    const associatedGoals = document.getElementById('associatedGoals');
+                    const goaldd = document.getElementById('goaldd');
+                    //clear the previous goals
+                    associatedGoals.innerHTML = "";
+                    goals.forEach(goal => {
+                        const goalElement = document.createElement('p');
+                        goalElement.textContent = goal.goalCode + ", " + goal.description;
+                        associatedGoals.appendChild(goalElement);
+
+                        const optionElement = document.createElement('option');
+                        optionElement.value = goals.indexOf(goal);
+                        optionElement.textContent = goal.goalCode + ", " + goal.description;
+                        goaldd.appendChild(optionElement);
+                    });
+                    
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            //goals
+            document.getElementById('dataForm2').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const goalIndex = document.getElementById('goaldd').value;
+                const selectedGoal = goals[goalIndex];
+                
+                const formData = new FormData();
+                formData.append('goal', JSON.stringify(selectedGoal));
+                
+                fetch('/selectdegree/form2', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    courses = data.courses;
+                    const associatedCourses2 = document.getElementById('associatedCourses2');
+                    //clear the previous courses
+                    associatedCourses2.innerHTML = "";
+                    courses.forEach(course => {
+                        const courseElement = document.createElement('p');
+                        courseElement.textContent = course.courseID + ", Core: " +  course.courseName;
+                        associatedCourses2.appendChild(courseElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+        </script>
+    </body>
+</html>

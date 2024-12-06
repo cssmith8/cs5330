@@ -11,7 +11,7 @@ def main():
     app.run(debug=False)
 
 if __name__ == "__main__":
-    testing: bool = True # Change to True to run tests
+    testing: bool = False # Change to True to run tests
     data: Data = Data()
     connection: mysql.connector.MySQLConnection = connect_to_database()
     if (connection is None):

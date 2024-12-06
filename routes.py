@@ -35,6 +35,10 @@ def instructor():
 def section():
     return render_template('section.html')
 
+@app.route('/selectdegree')
+def selectdegree():
+    return render_template('selectdegree.html')
+
 
 
 ################################ Form routes
@@ -128,7 +132,40 @@ def section_form():
 
     return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
 
+@app.route('/selectdegree/form', methods=['POST'])
+def selectdegree_form():
+    input_degree = json.loads(request.form.get('degree'))
+    degree: Degree = Degree(input_degree.get('degreeName'), input_degree.get('degreeLevel'))
 
+    courses: list[DegreeCourse] = Data._instance.db.get_degree_courses_from_degree(degree.degreeName, degree.degreeLevel)
+    c = []
+    if courses:
+        for degreeCourse in courses:
+            c.append({'courseID': degreeCourse.courseID, 'isCore': degreeCourse.isCore})
+    goals: list[Goal] = Data._instance.db.get_goals_from_degree(degree.degreeName, degree.degreeLevel)
+    g = []
+    if goals:
+        for goal in goals:
+            g.append({'goalCode': goal.goalCode, 'description': goal.description, 'degreeName': goal.degreeName, 'degreeLevel': goal.degreeLevel})
+    
+    return jsonify({"courses": c, "goals": g})
+
+@app.route('/selectdegree/form2', methods=['POST'])
+def selectdegree_form2():
+    input_goal = json.loads(request.form.get('goal'))
+    goal: Goal = Goal(input_goal.get('goalCode'), input_goal.get('degreeName'), input_goal.get('degreeLevel'), input_goal.get('description'))
+
+    goalCourses: list[GoalCourse] = Data._instance.db.get_goal_courses_from_goal(goal.goalCode, goal.degreeName, goal.degreeLevel)
+    c = []
+    if goalCourses:
+        for goalCourse in goalCourses:
+            course: Course = Data._instance.db.get_course(goalCourse.courseID)
+            if course:
+                c.append({'courseID': course.courseID, 'courseName': course.courseName})
+            else:
+                print("DB Error: course not found from goalCourse")
+
+    return jsonify({"courses": c})
 
 ################################ Backend routes
 
