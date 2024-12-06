@@ -607,4 +607,5 @@ class Database:
     # get all instructors
     def get_all_instructors(self) -> list[Instructor]:
         # TODO
-        return None
+        #sample return for now
+        return [Instructor("1", "John Doe"), Instructor("2", "Jane Doe"), Instructor("3", "Alice Smith")]

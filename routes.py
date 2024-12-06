@@ -31,6 +31,10 @@ def goal():
 def instructor():
     return render_template('instructor.html')
 
+@app.route('/section')
+def section():
+    return render_template('section.html')
+
 
 
 ################################ Form routes
@@ -110,6 +114,19 @@ def instructor_form():
     Data._instance.db.insert_instructor(instructor)
 
     return jsonify({"result": "instructor success " + instructorName, "invalid1": False, "invalid2": False})
+
+@app.route('/section/form', methods=['POST'])
+def section_form():
+    input_instructor = json.loads(request.form.get('instructor'))
+    input_course = json.loads(request.form.get('course'))
+    sectionID: str = request.form.get('sectionID')
+    numStudents: int = request.form.get('numStudents')
+    semester: str = request.form.get('semester')
+    year: int = request.form.get('year')
+
+    Data._instance.db.insert_section(Section(sectionID, input_course.get("courseID"), semester, year, numStudents, input_instructor.get('instructorID')))
+
+    return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
 
 
 

@@ -9,4 +9,7 @@
 
 body {
     font-family: Arial, sans-serif;
+    /*left-right margin of 10%*/
+    margin-left: 10%;
+    margin-right: 10%;
 }

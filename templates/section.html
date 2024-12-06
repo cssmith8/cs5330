@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Section Input</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    </head>
+    <body>
+        <a href="/home">Back to home page</a>
+        <br>
+        <h1>Section Input</h1>
+
+        <form id="dataForm">
+            <div>
+                <label for="instructordd">Input Instructor</label>
+                <select name="instructordd" id="instructordd" required>
+                </select>
+                <br>
+                <label for="coursedd">Input Course</label>
+                <select name="coursedd" id="coursedd" required>
+                </select>
+                <br>
+                <label for="sectionID">Input Section ID</label>
+                <input type="text" name="sectionID" id="sectionID" required>
+                <br>
+                <label for="semester">Input Semester</label>
+                <select name="semester" id="semester" required>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Fall">Fall</option>
+                </select>
+                <label for="year">Input Year</label>
+                <input type="number" name="year" id="year" required>
+                <br>
+                <label for="numStudents">Input Number of Students</label>
+                <input type="number" name="numStudents" id="numStudents" required>
+                <br>
+                <button type="submit">Submit</button>
+            </div>
+            <div>
+                <p id="result"></p>
+                <p id="field1error"></p>
+            </div>
+        </form>
+
+        <h2>Existing Section Information</h2>
+        <div id="degreeCourses">
+        </div>
+        
+        <a href="/home">Back to home page</a>
+
+        <script>
+            //instructors
+            var instructors = [];
+            fetch('/get_all_instructors')
+                .then(response => response.json())
+                .then(data => {
+                    instructors = data.content;
+                    const dropdown = document.getElementById('instructordd');
+                    data.content.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = instructors.indexOf(option);
+                        optionElement.textContent = option.instructorName + " " + option.instructorID;
+                        dropdown.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            //courses
+            var courses = [];
+            fetch('/get_all_courses')
+                .then(response => response.json())
+                .then(data => {
+                    courses = data.content;
+                    const dropdown = document.getElementById('coursedd');
+                    data.content.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = courses.indexOf(option);
+                        optionElement.textContent = option.courseID + " " + option.courseName;
+                        dropdown.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            fetch('/get_all_degree_courses')
+                .then(response => response.json())
+                .then(data => {
+                    const div = document.getElementById('degreeCourses');
+                    data.content.forEach(option => {
+                        const pElement = document.createElement('p');
+                        pElement.textContent = option.degreeName + " " + option.degreeLevel + ": " + option.courseID + " (Is Core: " + option.isCore + ")";
+                        div.appendChild(pElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const instructorIndex = document.getElementById('instructordd').value;
+                const courseIndex = document.getElementById('coursedd').value;
+                const selectedInstructor = instructors[instructorIndex];
+                const selectedCourse = courses[courseIndex];
+                const sectionID = document.getElementById('sectionID').value;
+                const semester = document.getElementById('semester').value;
+                const year = document.getElementById('year').value;
+                const numStudents = document.getElementById('numStudents').value;
+                
+                const formData = new FormData();
+                formData.append('instructor', JSON.stringify(selectedInstructor));
+                formData.append('course', JSON.stringify(selectedCourse));
+                formData.append('sectionID', sectionID);
+                formData.append('semester', semester);
+                formData.append('year', year);
+                formData.append('numStudents', numStudents);
+                
+                fetch('/section/form', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = 'Result: ' + data.result;
+                    if (data.invalid1) {
+                        document.getElementById('field1error').textContent = 'Invalid';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        </script>
+    </body>
+</html>
