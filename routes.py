@@ -159,7 +159,7 @@ def selectdegree_form2():
     c = []
     if goalCourses:
         for goalCourse in goalCourses:
-            course: Course = Data._instance.db.get_course(goalCourse.courseID)
+            course: Course = goalCourse.get_course(Data._instance.db)
             if course:
                 c.append({'courseID': course.courseID, 'courseName': course.courseName})
             else:
