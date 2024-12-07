@@ -266,8 +266,19 @@ class Database:
     # Inserts an evaluation into the database
     def insert_evaluation(self, evaluation: Evaluation) -> None:
         cursor = self.connection.cursor()
-           
-        #TODO
+        try:
+            cursor.execute("""
+                INSERT INTO Evaluation (GoalCode, DegreeName, DegreeLevel, SectionID, CourseID, Semester, Year, EvaluationType, A, B, C, F, ImprovementSuggestion)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (evaluation.goalCode, evaluation.degreeName, evaluation.degreeLevel, evaluation.sectionID, evaluation.courseID, evaluation.semester, evaluation.year, evaluation.evaluationType, evaluation.A, evaluation.B, evaluation.C, evaluation.F, evaluation.improvementSuggestion))
+            self.connection.commit()
+            print(f"Evaluation {evaluation.goalCode} {evaluation.degreeName} {evaluation.degreeLevel} {evaluation.sectionID} {evaluation.courseID} inserted successfully.")
+        except Error as e:
+            print(f"Error inserting evaluation: {e}")
+            self.connection.rollback()
+        finally:
+            cursor.close()
+
 
     # gets a degree from the database given all the key attributes
     def get_degree(self, degreeName: str, degreeLevel: str) -> Degree:
@@ -580,35 +591,114 @@ class Database:
     
     # get all degrees
     def get_all_degrees(self) -> list[Degree]:
-        # TODO
-        # sample return for now
-        return [Degree("Computer Science", "BS"), Degree("Computer Science", "MS"), Degree("Data Science", "PhD")]
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Degree")
+            result = cursor.fetchall()
+            if result is not None:
+                degrees = []
+                for row in result:
+                    degrees.append(Degree(row[0], row[1]))
+                return degrees
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting degrees: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all courses
     def get_all_courses(self) -> list[Course]:
-        # TODO
-        # sample return for now
-        return [Course("CS101", "Intro to Computer Science"), Course("CS102", "Data Structures"), Course("CS103", "Algorithms")]
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Course")
+            result = cursor.fetchall()
+            if result is not None:
+                courses = []
+                for row in result:
+                    courses.append(Course(row[0], row[1]))
+                return courses
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting courses: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all degree courses
     def get_all_degree_courses(self) -> list[DegreeCourse]:
-        # TODO
-        # sample return for now
-        return [DegreeCourse("Computer Science", "BS", "CS101", True), DegreeCourse("Computer Science", "BS", "CS102", True), DegreeCourse("Computer Science", "BS", "CS103", False)]
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Degree_Course")
+            result = cursor.fetchall()
+            if result is not None:
+                degreeCourses = []
+                for row in result:
+                    degreeCourses.append(DegreeCourse(row[0], row[1], row[2], row[3]))
+                return degreeCourses
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting degree courses: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all goals
     def get_all_goals(self) -> list[Goal]:
-        # TODO
-        # sample return for now
-        return [Goal("Goal1", "Computer Science", "BS", "Description 1"), Goal("Goal2", "Computer Science", "BS", "Description 2"), Goal("Goal3", "Computer Science", "BS", "Description 3")]
-    
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Goal")
+            result = cursor.fetchall()
+            if result is not None:
+                goals = []
+                for row in result:
+                    goals.append(Goal(row[0], row[1], row[2], row[3]))
+                return goals
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting goals: {e}")
+            return None
+        finally:
+            cursor.close()
+
     # get all goal courses
     def get_all_goal_courses(self) -> list[GoalCourse]:
-        # TODO
-        return None
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Goal_Course")
+            result = cursor.fetchall()
+            if result is not None:
+                goalCourses = []
+                for row in result:
+                    goalCourses.append(GoalCourse(row[0], row[1], row[2], row[3]))
+                return goalCourses
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting goal courses: {e}")
+            return None
+        finally:
+            cursor.close()
     
     # get all instructors
     def get_all_instructors(self) -> list[Instructor]:
-        # TODO
-        #sample return for now
-        return [Instructor("1", "John Doe"), Instructor("2", "Jane Doe"), Instructor("3", "Alice Smith")]
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Instructor")
+            result = cursor.fetchall()
+            if result is not None:
+                instructors = []
+                for row in result:
+                    instructors.append(Instructor(row[0], row[1]))
+                return instructors
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting instructors: {e}")
+            return None
+        finally:
+            cursor.close()
