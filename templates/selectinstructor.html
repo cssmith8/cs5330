@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Query Instructor</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    </head>
+    <body>
+        <a href="/home">Back to home page</a>
+        <br>
+        <h1>Query Instructor</h1>
+
+        <form id="dataForm">
+            <div>
+                <label for="instructordd">Input Instructor</label>
+                <select name="instructordd" id="instructordd" required>
+                </select>
+                <br>
+                <label for="startSemester">Start Semester</label>
+                <select name="startSemester" id="startSemester" required>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Fall">Fall</option>
+                </select>
+                <label for="startYear">Start Year</label>
+                <input type="number" name="startYear" id="startYear" required>
+                <br>
+                <label for="endSemester">End Semester</label>
+                <select name="endSemester" id="endSemester" required>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Fall">Fall</option>
+                </select>
+                <label for="endYear">End Year</label>
+                <input type="number" name="endYear" id="endYear" required>
+                <br>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+
+        <h2>Associated Sections</h2>
+        <div id="associatedSections">
+        </div>
+        
+        <a href="/home">Back to home page</a>
+
+        <script>
+            //instructors
+            var instructors = [];
+            fetch('/get_all_instructors')
+                .then(response => response.json())
+                .then(data => {
+                    instructors = data.content;
+                    const dropdown = document.getElementById('instructordd');
+                    data.content.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = instructors.indexOf(option);
+                        optionElement.textContent = option.instructorID + " " + option.instructorName;
+                        dropdown.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const instructorIndex = document.getElementById('instructordd').value;
+                const selectedInstructor = instructors[instructorIndex];
+                
+                const formData = new FormData();
+                formData.append('instructor', JSON.stringify(selectedInstructor));
+                formData.append('startSemester', document.getElementById('startSemester').value);
+                formData.append('startYear', document.getElementById('startYear').value);
+                formData.append('endSemester', document.getElementById('endSemester').value);
+                formData.append('endYear', document.getElementById('endYear').value);
+                
+                fetch('/selectinstructor/form', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    sections = data.sections;
+                    const associatedSections = document.getElementById('associatedSections');
+                    //clear the previous courses
+                    associatedSections.innerHTML = "";
+                    //if sections is empty, display message
+                    if (sections.length == 0) {
+                        const sectionElement = document.createElement('p');
+                        sectionElement.textContent = "No sections found";
+                        associatedSections.appendChild(sectionElement);
+                    } else {
+                        sections.forEach(section => {
+                            const sectionElement = document.createElement('p');
+                            sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
+                            associatedSections.appendChild(sectionElement);
+                        });
+                    }              
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        </script>
+    </body>
+</html>

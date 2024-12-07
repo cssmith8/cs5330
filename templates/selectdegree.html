@@ -78,6 +78,12 @@
                     const associatedCourses = document.getElementById('associatedCourses');
                     //clear the previous courses
                     associatedCourses.innerHTML = "";
+                    //if no courses are associated with the degree
+                    if (courses.length == 0) {
+                        const courseElement = document.createElement('p');
+                        courseElement.textContent = "No courses associated with this degree";
+                        associatedCourses.appendChild(courseElement);
+                    }
                     courses.forEach(course => {
                         const courseElement = document.createElement('p');
                         courseElement.textContent = course.courseID + ", Core: " +  course.isCore;
@@ -88,6 +94,12 @@
                     const goaldd = document.getElementById('goaldd');
                     //clear the previous goals
                     associatedGoals.innerHTML = "";
+                    //if no goals are associated with the degree
+                    if (goals.length == 0) {
+                        const goalElement = document.createElement('p');
+                        goalElement.textContent = "No goals associated with this degree";
+                        associatedGoals.appendChild(goalElement);
+                    }
                     goals.forEach(goal => {
                         const goalElement = document.createElement('p');
                         goalElement.textContent = goal.goalCode + ", " + goal.description;

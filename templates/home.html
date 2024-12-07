@@ -7,66 +7,17 @@
     <body>
         <h1 class="hometitle">Home page</h1>
 
-        <a href="/degree">Manage Degrees</a><br>
-        <a href="/degree_courses">Degree-Course</a><br>
-        <a href="/goal">Manage Goals</a><br>
-        <a href="/goal_courses">Goal-Course</a><br>
+        <h2>Data Input</h2>
+        <a href="/degree">Input Degrees</a><br>
+        <a href="/degree_courses">Link Degree to Course</a><br>
+        <a href="/goal">Input Goals</a><br>
+        <a href="/goal_courses">Link Goal to Course</a><br>
         <a href="/instructor">Manage Instructors</a><br>
         <a href="/section">Manage Sections</a><br>
 
         <h2>Querying</h2>
         <a href="/selectdegree">Query Degree</a><br>
-
-        <p>Sample Form:</p>
-        <form id="dataForm">
-            <div>
-                <label for="inputData">Input Data</label>
-                <input type="text" id="inputData" name="inputData" required>
-                <span id="field1error" style="color: red"></span>
-                <br>
-                <label for="inputData2">Input Data 2</label>
-                <input type="text" id="inputData2" name="inputData2" required>
-                <br>
-                <select name="dropdown" id="dropdown">
-                </select>
-                <br><br>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
-        <div id="result"></div>
-
-        <script>
-            // Fetch options from the server
-            fetch('/get_options')
-                .then(response => response.json())
-                .then(data => {
-                    const dropdown = document.getElementById('dropdown');
-                    data.content.forEach(option => {
-                        const optionElement = document.createElement('option');
-                        optionElement.value = option;
-                        optionElement.textContent = option;
-                        dropdown.appendChild(optionElement);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-
-            document.getElementById('dataForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData(event.target);
-                fetch('/home/process', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('result').textContent = 'Result: ' + data.result;
-                    if (data.invalid1) {
-                        document.getElementById('field1error').textContent = 'Invalid';
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        </script>
-
+        <a href="/selectcourse">Query Course</a><br>
+        <a href="/selectinstructor">Query Instructor</a><br>
     </body>
 </html>

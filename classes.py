@@ -123,6 +123,23 @@ class Section:
             print("Error: Incorrect database type passed into get_evaluations()")
             return None
         return db.get_evaluations_from_section(self.sectionID, self.courseID, self.semester, self.year)
+    
+    def get_time(self) -> int:
+        return Section.get_time_from_semester(self.semester, self.year)
+    
+    # static function to convert a semester and year to an int
+    @staticmethod
+    def get_time_from_semester(isemester: str, iyear: int) -> int:
+        nSemester: int = 0
+        if isemester == "Fall":
+            nSemester = 1
+        elif isemester == "Spring":
+            nSemester = 2
+        elif isemester == "Summer":
+            nSemester = 3
+        else:
+            raise ValueError(f"Invalid semester: {isemester}")
+        return int(iyear * 10) + int(nSemester)
 
 
 class Instructor:

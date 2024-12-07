@@ -4,8 +4,6 @@ from classes import *
 
 app = Flask(__name__)
 
-options: list = ['option1', 'option7', 'option3']
-
 @app.route('/')
 @app.route('/home')
 def home():
@@ -39,25 +37,17 @@ def section():
 def selectdegree():
     return render_template('selectdegree.html')
 
+@app.route('/selectcourse')
+def selectcourse():
+    return render_template('selectcourse.html')
+
+@app.route('/selectinstructor')
+def selectinstructor():
+    return render_template('selectinstructor.html')
+
 
 
 ################################ Form routes
-
-@app.route('/home/process', methods=['POST'])
-def process():
-    input_data = request.form.get('inputData')
-    input_data_2 = request.form.get('inputData2')
-    input_data_3 = request.form.get('dropdown')
-    print (input_data_3)
-    # Process the data
-    result = some_processing_function(input_data)
-    result2 = some_processing_function(input_data_2)
-    return jsonify({'result': result + " " + result2, 'invalid1': 0})
-
-def some_processing_function(input_data) -> str:
-    # Example processing function
-    print(f"Processing data: {input_data}")
-    return f"Processed data: {Data._instance.db.is_connected()}"
 
 @app.route('/dcinput/form', methods=['POST'])
 def dcinput_form():
@@ -167,6 +157,48 @@ def selectdegree_form2():
 
     return jsonify({"courses": c})
 
+@app.route('/selectcourse/form', methods=['POST'])
+def selectcourse_form():
+    input_course = json.loads(request.form.get('course'))
+    course: Course = Course(input_course.get('courseID'), input_course.get('courseName'))
+    startSemester: str = request.form.get('startSemester')
+    startYear: int = request.form.get('startYear')
+    endSemester: str = request.form.get('endSemester')
+    endYear: int = request.form.get('endYear')
+
+    startTime: int = Section.get_time_from_semester(startSemester, startYear)
+    endTime: int = Section.get_time_from_semester(endSemester, endYear)
+
+    sections: list[Section] = course.get_sections(Data._instance.db)
+    s = []
+    if sections:
+        for section in sections:
+            if section.get_time() >= startTime and section.get_time() <= endTime:
+                s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID})
+
+    return jsonify({"sections": s})
+
+@app.route('/selectinstructor/form', methods=['POST'])
+def selectinstructor_form():
+    input_instructor = json.loads(request.form.get('instructor'))
+    instructor: Instructor = Instructor(input_instructor.get('instructorID'), input_instructor.get('instructorName'))
+    startSemester: str = request.form.get('startSemester')
+    startYear: int = request.form.get('startYear')
+    endSemester: str = request.form.get('endSemester')
+    endYear: int = request.form.get('endYear')
+
+    startTime: int = Section.get_time_from_semester(startSemester, startYear)
+    endTime: int = Section.get_time_from_semester(endSemester, endYear)
+
+    sections: list[Section] = instructor.get_sections(Data._instance.db)
+    s = []
+    if sections:
+        for section in sections:
+            if section.get_time() >= startTime and section.get_time() <= endTime:
+                s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID})
+
+    return jsonify({"sections": s})
+
 ################################ Backend routes
 
 @app.route('/get_all_degrees')
@@ -228,12 +260,6 @@ def get_all_instructors():
     for instructor in instructors:
         r.append({'instructorID': instructor.instructorID, 'instructorName': instructor.instructorName})
     return jsonify({'content': r})
-
-@app.route('/get_options')
-def get_options():
-    return jsonify({'content': options})
-
-
 
 ################################ misc routes
 
