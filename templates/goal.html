@@ -50,21 +50,21 @@
                         optionElement.textContent = option.degreeName + " " + option.degreeLevel;
                         dropdown.appendChild(optionElement);
                     });
+
+                    fetch('/get_all_goals')
+                        .then(response => response.json())
+                        .then(data => {
+                            const div = document.getElementById('goals');
+                            data.content.forEach(option => {
+                                const pElement = document.createElement('p');
+                                pElement.textContent = "[" + option.degreeName + " " + option.degreeLevel + "] " + option.goalCode + ": " + option.description;
+                                div.appendChild(pElement);
+                            });
+                        })
+                        .catch(error => console.error('Error:', error));
                 })
                 .catch(error => console.error('Error:', error));
         
-            fetch('/get_all_goals')
-                .then(response => response.json())
-                .then(data => {
-                    const div = document.getElementById('goals');
-                    data.content.forEach(option => {
-                        const pElement = document.createElement('p');
-                        pElement.textContent = "[" + option.degreeName + " " + option.degreeLevel + "] " + option.goalCode + ": " + option.description;
-                        div.appendChild(pElement);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-            
             document.getElementById('dataForm').addEventListener('submit', function(event) {
                 event.preventDefault();
                 const degreeIndex = document.getElementById('degreedd').value;

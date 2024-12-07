@@ -36,6 +36,8 @@
         <script>
             //goals
             var goals = [];
+            //courses
+            var courses = [];
             fetch('/get_all_goals')
                 .then(response => response.json())
                 .then(data => {
@@ -47,34 +49,32 @@
                         optionElement.textContent = "[" + option.degreeName + " " + option.degreeLevel + "] " + option.goalCode;
                         dropdown.appendChild(optionElement);
                     });
-                })
-                .catch(error => console.error('Error:', error));
-            
-            //courses
-            var courses = [];
-            fetch('/get_all_courses')
-                .then(response => response.json())
-                .then(data => {
-                    courses = data.content;
-                    const dropdown = document.getElementById('coursedd');
-                    data.content.forEach(option => {
-                        const optionElement = document.createElement('option');
-                        optionElement.value = courses.indexOf(option);
-                        optionElement.textContent = option.courseID + " " + option.courseName;
-                        dropdown.appendChild(optionElement);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-            
-            fetch('/get_all_goal_courses')
-                .then(response => response.json())
-                .then(data => {
-                    const div = document.getElementById('degreeCourses');
-                    data.content.forEach(option => {
-                        const pElement = document.createElement('p');
-                        pElement.textContent = option.degreeName + " " + option.degreeLevel + ": " + option.courseID + " (Is Core: " + option.isCore + ")";
-                        div.appendChild(pElement);
-                    });
+
+                    fetch('/get_all_courses')
+                        .then(response => response.json())
+                        .then(data => {
+                            courses = data.content;
+                            const dropdown = document.getElementById('coursedd');
+                            data.content.forEach(option => {
+                                const optionElement = document.createElement('option');
+                                optionElement.value = courses.indexOf(option);
+                                optionElement.textContent = option.courseID + " " + option.courseName;
+                                dropdown.appendChild(optionElement);
+                            });
+
+                            fetch('/get_all_goal_courses')
+                                .then(response => response.json())
+                                .then(data => {
+                                    const div = document.getElementById('degreeCourses');
+                                    data.content.forEach(option => {
+                                        const pElement = document.createElement('p');
+                                        pElement.textContent = option.degreeName + " " + option.degreeLevel + ": " + option.courseID + " (Is Core: " + option.isCore + ")";
+                                        div.appendChild(pElement);
+                                    });
+                                })
+                                .catch(error => console.error('Error:', error));
+                        })
+                        .catch(error => console.error('Error:', error));
                 })
                 .catch(error => console.error('Error:', error));
             
