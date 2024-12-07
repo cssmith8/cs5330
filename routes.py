@@ -157,6 +157,33 @@ def selectdegree_form2():
 
     return jsonify({"courses": c})
 
+@app.route('/selectdegree/form3', methods=['POST'])
+def selectdegree_form3():
+    input_degree = json.loads(request.form.get('degree'))
+    degree: Degree = Degree(input_degree.get('degreeName'), input_degree.get('degreeLevel'))
+    startSemester: str = request.form.get('startSemester')
+    startYear: int = request.form.get('startYear')
+    endSemester: str = request.form.get('endSemester')
+    endYear: int = request.form.get('endYear')
+
+    startTime: int = Section.get_time_from_semester(startSemester, startYear)
+    endTime: int = Section.get_time_from_semester(endSemester, endYear)
+
+    degree_courses: list[DegreeCourse] = degree.get_degree_courses(Data._instance.db)
+
+    if not degree_courses:
+        return jsonify({"sections": []})
+    for dc in degree_courses:
+        course: Course = dc.get_course(Data._instance.db)
+        s = []
+        sections: list[Section] = course.get_sections(Data._instance.db)
+        if sections:
+            for section in sections:
+                if section.get_time() >= startTime and section.get_time() <= endTime:
+                    s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID})
+    
+    return jsonify({"sections": s})
+
 @app.route('/selectcourse/form', methods=['POST'])
 def selectcourse_form():
     input_course = json.loads(request.form.get('course'))
@@ -260,13 +287,3 @@ def get_all_instructors():
     for instructor in instructors:
         r.append({'instructorID': instructor.instructorID, 'instructorName': instructor.instructorName})
     return jsonify({'content': r})
-
-################################ misc routes
-
-# @app.route('/get_degree/<degree_id>')
-# def get_degree(degree_id):
-#     degree: Degree = Data._instance.db.get_degree(degree_id)
-#     if degree:
-#         return jsonify(degree)
-#     else:
-#         return jsonify({'error': 'Degree not found'}), 404

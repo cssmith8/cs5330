@@ -265,7 +265,8 @@ class Database:
 
     # Inserts an evaluation into the database
     def insert_evaluation(self, evaluation: Evaluation) -> None:
-        cursor = self.connection.cursor()  
+        cursor = self.connection.cursor()
+           
         #TODO
 
     # gets a degree from the database given all the key attributes
