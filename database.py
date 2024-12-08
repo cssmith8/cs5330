@@ -408,7 +408,7 @@ class Database:
             cursor.execute("SELECT * FROM Evaluation WHERE GoalCode = %s AND DegreeName = %s AND DegreeLevel = %s AND SectionID = %s AND CourseID = %s AND Semester = %s AND Year = %s", (goalCode, degreeName, degreeLevel, sectionID, courseID, semester, year))
             result = cursor.fetchone()
             if result is not None:
-                return Evaluation(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10], result[11])
+                return Evaluation(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10], result[11], result[12])
             else:
                 return None
         except Error as e:
@@ -562,7 +562,7 @@ class Database:
             if result is not None:
                 evaluations = []
                 for row in result:
-                    evaluations.append(Evaluation(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11]))
+                    evaluations.append(Evaluation(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12]))
                 return evaluations
             else:
                 return None
@@ -582,7 +582,7 @@ class Database:
             if result is not None:
                 evaluations = []
                 for row in result:
-                    evaluations.append(Evaluation(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11]))
+                    evaluations.append(Evaluation(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12]))
                 return evaluations
             else:
                 return None
@@ -722,5 +722,41 @@ class Database:
         except Error as e:
             print(f"Error getting sections: {e}")
             return None
+        finally:
+            cursor.close()
+
+    # get all evaluations
+    def get_all_evaluations(self) -> list[Evaluation]:
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Evaluation")
+            result = cursor.fetchall()
+            if result is not None:
+                evaluations = []
+                for row in result:
+                    evaluations.append(Evaluation(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12]))
+                return evaluations
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting evaluations: {e}")
+            return None
+        finally:
+            cursor.close()
+    
+    # update an evaluation in the database
+    def update_evaluation(self, evaluation: Evaluation) -> None:
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("""
+                UPDATE Evaluation
+                SET EvaluationType = %s, A = %s, B = %s, C = %s, F = %s, ImprovementSuggestion = %s
+                WHERE GoalCode = %s AND DegreeName = %s AND DegreeLevel = %s AND SectionID = %s AND CourseID = %s AND Semester = %s AND Year = %s
+            """, (evaluation.evaluationType, evaluation.A, evaluation.B, evaluation.C, evaluation.F, evaluation.improvementSuggestion, evaluation.goalCode, evaluation.degreeName, evaluation.degreeLevel, evaluation.sectionID, evaluation.courseID, evaluation.semester, evaluation.year))
+            self.connection.commit()
+            print(f"Evaluation {evaluation.goalCode} {evaluation.degreeName} {evaluation.degreeLevel} {evaluation.sectionID} {evaluation.courseID} updated successfully.")
+        except Error as e:
+            print(f"Error updating evaluation: {e}")
+            self.connection.rollback()
         finally:
             cursor.close()
