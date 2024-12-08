@@ -25,6 +25,10 @@ def degree():
 def goal():
     return render_template('goal.html')
 
+@app.route('/course')
+def course():
+    return render_template('course.html')
+
 @app.route('/instructor')
 def instructor():
     return render_template('instructor.html')
@@ -86,6 +90,18 @@ def goal_form():
     Data._instance.db.insert_goal(goal)
 
     return jsonify({"result": goalCode + " " + input_degree.get('degreeName'), "invalid1": False, "invalid2": False})
+
+@app.route('/course/form', methods=['POST'])
+def course_form():
+    courseID: str = request.form.get('courseID')
+    courseName: str = request.form.get('courseName')
+
+    # input validation here
+
+    course: Course = Course(courseID, courseName)
+    Data._instance.db.insert_course(course)
+
+    return jsonify({"result": "course success " + courseID, "invalid1": False, "invalid2": False})
 
 @app.route('/gcinput/form', methods=['POST'])
 def gcinput_form():
@@ -166,8 +182,8 @@ def selectdegree_form3():
     endSemester: str = request.form.get('endSemester')
     endYear: int = request.form.get('endYear')
 
-    startTime: int = Section.get_time_from_semester(startSemester, startYear)
-    endTime: int = Section.get_time_from_semester(endSemester, endYear)
+    startTime: int = Section.get_time_from_semester(startSemester, int(startYear))
+    endTime: int = Section.get_time_from_semester(endSemester, int(endYear))
 
     degree_courses: list[DegreeCourse] = degree.get_degree_courses(Data._instance.db)
 
@@ -193,8 +209,8 @@ def selectcourse_form():
     endSemester: str = request.form.get('endSemester')
     endYear: int = request.form.get('endYear')
 
-    startTime: int = Section.get_time_from_semester(startSemester, startYear)
-    endTime: int = Section.get_time_from_semester(endSemester, endYear)
+    startTime: int = Section.get_time_from_semester(startSemester, int(startYear))
+    endTime: int = Section.get_time_from_semester(endSemester, int(endYear))
 
     sections: list[Section] = course.get_sections(Data._instance.db)
     s = []
@@ -214,8 +230,8 @@ def selectinstructor_form():
     endSemester: str = request.form.get('endSemester')
     endYear: int = request.form.get('endYear')
 
-    startTime: int = Section.get_time_from_semester(startSemester, startYear)
-    endTime: int = Section.get_time_from_semester(endSemester, endYear)
+    startTime: int = Section.get_time_from_semester(startSemester, int(startYear))
+    endTime: int = Section.get_time_from_semester(endSemester, int(endYear))
 
     sections: list[Section] = instructor.get_sections(Data._instance.db)
     s = []
@@ -286,4 +302,14 @@ def get_all_instructors():
     r = []
     for instructor in instructors:
         r.append({'instructorID': instructor.instructorID, 'instructorName': instructor.instructorName})
+    return jsonify({'content': r})
+
+@app.route('/get_all_sections')
+def get_all_sections():
+    sections: list[Section] = Data._instance.db.get_all_sections()
+    if not sections:
+        return jsonify({'content': []})
+    r = []
+    for section in sections:
+        r.append({'sectionID': section.sectionID, 'courseID': section.courseID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID})
     return jsonify({'content': r})

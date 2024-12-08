@@ -131,11 +131,11 @@ class Section:
     @staticmethod
     def get_time_from_semester(isemester: str, iyear: int) -> int:
         nSemester: int = 0
-        if isemester == "Fall":
+        if isemester == "Spring":
             nSemester = 1
-        elif isemester == "Spring":
-            nSemester = 2
         elif isemester == "Summer":
+            nSemester = 2
+        elif isemester == "Fall":
             nSemester = 3
         else:
             raise ValueError(f"Invalid semester: {isemester}")

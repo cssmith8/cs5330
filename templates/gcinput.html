@@ -27,7 +27,7 @@
             </div>
         </form>
 
-        <h2>Existing Degree-Course Information</h2>
+        <h2>Existing Goal-Course Information</h2>
         <div id="degreeCourses">
         </div>
         
@@ -68,7 +68,7 @@
                                     const div = document.getElementById('degreeCourses');
                                     data.content.forEach(option => {
                                         const pElement = document.createElement('p');
-                                        pElement.textContent = option.degreeName + " " + option.degreeLevel + ": " + option.courseID + " (Is Core: " + option.isCore + ")";
+                                        pElement.textContent = "[" + option.goalCode + " " + option.degreeName + " " + option.degreeLevel + "] " + option.courseID;
                                         div.appendChild(pElement);
                                     });
                                 })

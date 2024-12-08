@@ -77,13 +77,13 @@
                                 dropdown.appendChild(optionElement);
                             });
 
-                            fetch('/get_all_degree_courses')
+                            fetch('/get_all_sections')
                                 .then(response => response.json())
                                 .then(data => {
                                     const div = document.getElementById('degreeCourses');
                                     data.content.forEach(option => {
                                         const pElement = document.createElement('p');
-                                        pElement.textContent = option.degreeName + " " + option.degreeLevel + ": " + option.courseID + " (Is Core: " + option.isCore + ")";
+                                        pElement.textContent = sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
                                         div.appendChild(pElement);
                                     });
                                 })

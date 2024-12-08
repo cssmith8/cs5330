@@ -183,7 +183,10 @@ class Database:
     def insert_degree_course(self, degreeCourse: DegreeCourse) -> None:
         cursor = self.connection.cursor()
         try:
-            cursor.execute("INSERT INTO Degree_Course (DegreeName, DegreeLevel, CourseID, IsCore) VALUES (%s, %s, %s, %s)", (degreeCourse.degreeName, degreeCourse.degreeLevel, degreeCourse.courseID, degreeCourse.isCore))
+            core: int = 0
+            if degreeCourse.isCore:
+                core = 1
+            cursor.execute("INSERT INTO Degree_Course (DegreeName, DegreeLevel, CourseID, IsCore) VALUES (%s, %s, %s, %s)", (degreeCourse.degreeName, degreeCourse.degreeLevel, degreeCourse.courseID, core))
             self.connection.commit()
             print(f"Degree course {degreeCourse.degreeName} {degreeCourse.degreeLevel} {degreeCourse.courseID} inserted successfully.")
         except Error as e:
@@ -699,6 +702,25 @@ class Database:
                 return None
         except Error as e:
             print(f"Error getting instructors: {e}")
+            return None
+        finally:
+            cursor.close()
+
+    # get all sections
+    def get_all_sections(self) -> list[Section]:
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM Section")
+            result = cursor.fetchall()
+            if result is not None:
+                sections = []
+                for row in result:
+                    sections.append(Section(row[0], row[1], row[2], row[3], row[4], row[5]))
+                return sections
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting sections: {e}")
             return None
         finally:
             cursor.close()
