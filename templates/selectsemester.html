@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Query Semester</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    </head>
+    <body>
+        <a href="/home">Back to home page</a>
+        <br>
+        <h1>Query Semester</h1>
+
+        <form id="dataForm">
+            <div>
+                <label for="semester">Input Semester</label>
+                <select name="semester" id="semester" required>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Fall">Fall</option>
+                </select>
+                <label for="year">Year</label>
+                <input type="number" name="year" id="year" required>
+                <br>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+
+        <h2>Associated Sections</h2>
+        <div id="associatedSections">
+        </div>
+        
+        <a href="/home">Back to home page</a>
+
+        <script>
+            
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                fetch('/selectsemester/form', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    sections = data.sections;
+                    const associatedSections = document.getElementById('associatedSections');
+                    //clear the previous courses
+                    associatedSections.innerHTML = "";
+                    //if sections is empty, display message
+                    if (sections.length == 0) {
+                        const sectionElement = document.createElement('p');
+                        sectionElement.textContent = "No sections found";
+                        associatedSections.appendChild(sectionElement);
+                    } else {
+                        sections.forEach(section => {
+                            const sectionElement = document.createElement('p');
+                            sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
+                            associatedSections.appendChild(sectionElement);
+
+                            const status = section.status;
+                            var statusText = "";
+                            //switch statement to determine the status of the section
+                            switch (status) {
+                                case "0":
+                                    statusText = "Not Evaluated";
+                                    break;
+                                case "1":
+                                    statusText = "Fully evaluated with suggestion";
+                                    break;
+                                case "2":
+                                    statusText = "Fully evaluated without suggestion";
+                                    break;
+                                case "3":
+                                    statusText = "Partially evaluated with suggestion";
+                                    break;
+                                case "4":
+                                    statusText = "Partially evaluated without suggestion";
+                                    break;
+                                default:
+                                    statusText = "Unknown";
+                            }
+                            const evalElement = document.createElement('p');
+                            evalElement.textContent = "-    Evaluation: " + statusText;
+                            associatedSections.appendChild(evalElement);
+                        });
+                    }              
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        </script>
+    </body>
+</html>

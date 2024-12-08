@@ -49,6 +49,10 @@ def selectcourse():
 def selectinstructor():
     return render_template('selectinstructor.html')
 
+@app.route('/selectsemester')
+def selectsemester():
+    return render_template('selectsemester.html')
+
 
 
 ################################ Form routes
@@ -135,7 +139,8 @@ def section_form():
     year: int = request.form.get('year')
 
     Data._instance.db.insert_section(Section(sectionID, input_course.get("courseID"), semester, year, numStudents, input_instructor.get('instructorID')))
-
+    # temp
+    Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
     return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
 
 @app.route('/selectdegree/form', methods=['POST'])
@@ -240,6 +245,36 @@ def selectinstructor_form():
             if section.get_time() >= startTime and section.get_time() <= endTime:
                 s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID})
 
+    return jsonify({"sections": s})
+
+@app.route('/selectsemester/form', methods=['POST'])
+def selectsemester_form():
+    semester: str = request.form.get('semester')
+    year: int = request.form.get('year')
+
+    time: int = Section.get_time_from_semester(semester, int(year))
+    sections: list[Section] = Data._instance.db.get_all_sections()
+
+    s = []
+    # print length
+    if sections:
+        for section in sections:
+            if section.get_time() == time:
+                evalinfo: str = "0"
+                real: list[Evaluation] = section.get_evaluations(Data._instance.db)
+                if real:
+                    evalinfo = "1"
+                    e: Evaluation = real[0]
+                    if e.A is None or e.B is None or e.C is None or e.F is None or e.evaluationType is None:
+                        if e.improvementSuggestion is None:
+                            evalinfo = "4"
+                        else:
+                            evalinfo = "3"
+                    else:
+                        if e.improvementSuggestion is None:
+                            evalinfo = "2"
+                s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID, 'status': evalinfo})
+                      
     return jsonify({"sections": s})
 
 ################################ Backend routes
