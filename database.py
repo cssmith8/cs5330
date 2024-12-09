@@ -760,3 +760,10 @@ class Database:
             self.connection.rollback()
         finally:
             cursor.close()
+    
+    #insert or update an evaluation in the database
+    def insert_or_update_evaluation(self, evaluation: Evaluation) -> None:
+        if self.get_evaluation(evaluation.goalCode, evaluation.degreeName, evaluation.degreeLevel, evaluation.sectionID, evaluation.courseID, evaluation.semester, evaluation.year) is None:
+            self.insert_evaluation(evaluation)
+        else:
+            self.update_evaluation(evaluation)

@@ -75,16 +75,19 @@
                         associatedSections.appendChild(sectionElement);
                     } else {
                         sections.forEach(section => {
+                            const sectionDiv = document.createElement('div');
+                            sectionDiv.classList.add('bordered');
+
                             const sectionElement = document.createElement('p');
                             sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
-                            associatedSections.appendChild(sectionElement);
+                            sectionDiv.appendChild(sectionElement);
 
                             const status = section.status;
                             var statusText = "";
                             //switch statement to determine the status of the section
                             switch (status) {
                                 case "0":
-                                    statusText = "Not Evaluated";
+                                    statusText = "Never Evaluated";
                                     break;
                                 case "1":
                                     statusText = "Fully evaluated with suggestion";
@@ -103,7 +106,9 @@
                             }
                             const evalElement = document.createElement('p');
                             evalElement.textContent = "-    Evaluation: " + statusText;
-                            associatedSections.appendChild(evalElement);
+                            sectionDiv.appendChild(evalElement);
+
+                            associatedSections.appendChild(sectionDiv);
                         });
                     }              
                 })
@@ -130,12 +135,18 @@
                         associatedSections.appendChild(sectionElement);
                     } else {
                         sections.forEach(section => {
+                            const sectionDiv = document.createElement('div');
+                            sectionDiv.classList.add('bordered');
+
                             const sectionElement = document.createElement('p');
                             sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
-                            associatedSections.appendChild(sectionElement);
+                            sectionDiv.appendChild(sectionElement);
+
                             const evalElement = document.createElement('p');
                             evalElement.textContent = "-    Passing Percentage: " + section.percentage + "%";
-                            associatedSections.appendChild(evalElement);
+                            sectionDiv.appendChild(evalElement);
+
+                            associatedSections.appendChild(sectionDiv);
                         });
                     }              
                 })

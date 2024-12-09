@@ -13,3 +13,8 @@ body {
     margin-left: 10%;
     margin-right: 10%;
 }
+
+.bordered {
+    border: 1px solid black;
+    padding: 10px;
+}

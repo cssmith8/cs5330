@@ -35,30 +35,54 @@
 
         <form id="editForm">
             <div>
+                <div id="currentlyEditing"></div>
                 <label for="evalType">Evaluation Type</label>
-                <input type="text" id="evalType" name="evalType" required>
+                <input type="text" id="evalType" name="evalType">
                 <span id="field1error" style="color: red"></span>
                 <br>
                 <label for="aamount">A amount</label>
-                <input type="number" name="aamount" id="aamount" required>
+                <input type="number" name="aamount" id="aamount">
                 <br>
                 <label for="bamount">B amount</label>
-                <input type="number" name="bamount" id="bamount" required>
+                <input type="number" name="bamount" id="bamount">
                 <br>
                 <label for="camount">C amount</label>
-                <input type="number" name="camount" id="camount" required>
+                <input type="number" name="camount" id="camount">
                 <br>
                 <label for="famount">F amount</label>
-                <input type="number" name="famount" id="famount" required>
+                <input type="number" name="famount" id="famount">
                 <br>
-                <label for="improvement">Improvement Suggestion</label>
-                <textarea name="improvement" id="improvement" rows="4" cols="50" required></textarea>
+                <label for="improvement">Improvement Suggestion</label><br>
+                <textarea name="improvement" id="improvement" rows="4" cols="50"></textarea>
                 <br>
-                <button type="submit">Save</button>
+                <button type="submit" disabled>Save</button>
             </div>
         </form>
 
+        <br>
+
         <div id="editResult">
+        </div>
+
+        <br>
+
+        <h2>Duplicate Evaluation</h2>
+        <form id="duplicateForm">
+            <div>
+                <label for="evalFrom">From</label>
+                <select name="evalFrom" id="evalFrom" required>
+                </select>
+                <br>
+                <label for="evalTo">To</label>
+                <select name="evalTo" id="evalTo" required>
+                </select>
+                <br>
+                <button type="submit" disabled>Duplicate</button>
+            </div>
+
+        <br>
+
+        <div id="duplicateResult">
         </div>
         
         <a href="/home">Back to home page</a>
@@ -67,6 +91,7 @@
             //instructors
             var instructors = [];
             var evaluations = [];
+            var selectedEvaluation = null;
             fetch('/get_all_instructors')
                 .then(response => response.json())
                 .then(data => {
@@ -110,14 +135,104 @@
                         sectionElement.textContent = "No sections with any goals found";
                         associatedSections.appendChild(sectionElement);
                     } else {
+                        
                         evaluations.forEach(e => {
-                            const sectionElement = document.createElement('p');
-                            sectionElement.textContent = "ID: " + e.sectionID;
-                            associatedSections.appendChild(sectionElement);
+                            const sectionDiv = document.createElement('div');
+                            sectionDiv.className = 'bordered';
 
-                            var aamt 
+                            const sectionElement = document.createElement('p');
+                            sectionElement.textContent = "Section ID: " + e.sectionID;
+                            sectionDiv.appendChild(sectionElement);
+
+                            //button that will allow the user to edit the evaluation
+                            const editButton = document.createElement('button');
+                            editButton.textContent = "Edit Evaluation";
+                            editButton.addEventListener('click', function() {
+                                document.getElementById('editResult').innerHTML = "";
+                                document.getElementById('evalType').value = e.evaluationType || "";
+                                document.getElementById('aamount').value = e.A >= 0 ? e.A : "";
+                                document.getElementById('bamount').value = e.B >= 0 ? e.B : "";
+                                document.getElementById('camount').value = e.C >= 0 ? e.C : "";
+                                document.getElementById('famount').value = e.F >= 0 ? e.F : "";
+                                document.getElementById('improvement').value = e.improvementSuggestion || "";
+                                selectedEvaluation = e;
+                                document.getElementById('currentlyEditing').textContent = "Currently editing evaluation for section " + e.sectionID;
+                                document.querySelector('#editForm button[type="submit"]').disabled = false;
+                            });
+                            sectionDiv.appendChild(editButton);
+
+                            associatedSections.appendChild(sectionDiv);
+
+                            //add these evaluations to the dropdown for duplication
+                            const evalFromDropdown = document.getElementById('evalFrom');
+                            const evalToDropdown = document.getElementById('evalTo');
+                            const evalFromOption = document.createElement('option');
+                            evalFromOption.value = evaluations.indexOf(e);
+                            evalFromOption.textContent = e.courseID + " " + e.sectionID + " " + e.goalCode;
+                            evalFromDropdown.appendChild(evalFromOption);
+                            const evalToOption = document.createElement('option');
+                            evalToOption.value = evaluations.indexOf(e);
+                            evalToOption.textContent = e.courseID + " " + e.sectionID + " " + e.goalCode;
+                            evalToDropdown.appendChild(evalToOption);
+
                         });
                     }    
+                    document.querySelector('#duplicateForm button[type="submit"]').disabled = false;
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            document.getElementById('editForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData();
+                formData.append('sectionID', selectedEvaluation.sectionID);
+                formData.append('courseID', selectedEvaluation.courseID);
+                formData.append('semester', selectedEvaluation.semester);
+                formData.append('year', selectedEvaluation.year);
+                formData.append('goalCode', selectedEvaluation.goalCode);
+                formData.append('degreeName', selectedEvaluation.degreeName);
+                formData.append('degreeLevel', selectedEvaluation.degreeLevel);
+                formData.append('evaluationType', document.getElementById('evalType').value);
+                formData.append('A', document.getElementById('aamount').value);
+                formData.append('B', document.getElementById('bamount').value);
+                formData.append('C', document.getElementById('camount').value);
+                formData.append('F', document.getElementById('famount').value);
+                formData.append('improvementSuggestion', document.getElementById('improvement').value);
+
+                fetch('/evaluation/edit', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('editResult').textContent = "Evaluation updated successfully";
+                    } else {
+                        document.getElementById('editResult').textContent = "Error updating evaluation";
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            document.getElementById('duplicateForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData();
+                const evalFromIndex = document.getElementById('evalFrom').value;
+                const evalToIndex = document.getElementById('evalTo').value;
+                formData.append('evalFrom', JSON.stringify(evaluations[evalFromIndex]));
+                formData.append('evalTo', JSON.stringify(evaluations[evalToIndex]));
+
+                fetch('/evaluation/duplicate', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('duplicateResult').textContent = "Evaluation duplicated successfully";
+                    } else {
+                        document.getElementById('duplicateResult').textContent = "Error duplicating evaluation";
+                    }
                 })
                 .catch(error => console.error('Error:', error));
             });

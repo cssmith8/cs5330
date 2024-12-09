@@ -143,7 +143,7 @@ def section_form():
 
     Data._instance.db.insert_section(Section(sectionID, input_course.get("courseID"), semester, year, numStudents, input_instructor.get('instructorID')))
     # temp insert example evaluation
-    Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
+    # Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
     return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
 
 @app.route('/evaluation/form', methods=['POST'])
@@ -290,13 +290,13 @@ def selectsemester_form():
                 if real:
                     evalinfo = "1"
                     e: Evaluation = real[0]
-                    if e.A is None or e.B is None or e.C is None or e.F is None or e.evaluationType is None:
-                        if e.improvementSuggestion is None:
+                    if (e.A is None or e.A == -1) or (e.B is None or e.B == -1) or (e.C is None or e.C == -1) or (e.F is None or e.F == -1) or (e.evaluationType is None or e.evaluationType == ""):
+                        if (e.improvementSuggestion is None or e.improvementSuggestion == ""):
                             evalinfo = "4"
                         else:
                             evalinfo = "3"
                     else:
-                        if e.improvementSuggestion is None:
+                        if (e.improvementSuggestion is None or e.improvementSuggestion == ""):
                             evalinfo = "2"
                 s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID, 'status': evalinfo})
                       
@@ -324,6 +324,43 @@ def selectsemester_form2():
                             s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID, 'percentage': percentage * 100})
     return jsonify({"sections": s})
 
+@app.route('/evaluation/edit', methods=['POST'])
+def evaluation_edit():
+    sectionID: str = request.form.get('sectionID')
+    courseID: str = request.form.get('courseID')
+    semester: str = request.form.get('semester')
+    year: int = request.form.get('year')
+    goalCode: str = request.form.get('goalCode')
+    degreeName: str = request.form.get('degreeName')
+    degreeLevel: str = request.form.get('degreeLevel')
+    evaluationType: str = request.form.get('evaluationType')
+    A: int = request.form.get('A')
+    B: int = request.form.get('B')
+    C: int = request.form.get('C')
+    F: int = request.form.get('F')
+    improvementSuggestion: str = request.form.get('improvementSuggestion')
+
+    if A == "": A = -1
+    if B == "": B = -1
+    if C == "": C = -1
+    if F == "": F = -1
+
+    e: Evaluation = Evaluation(goalCode, degreeName, degreeLevel, sectionID, courseID, semester, year, evaluationType, A, B, C, F, improvementSuggestion)
+
+    Data._instance.db.insert_or_update_evaluation(e)
+
+    return jsonify({"success": 1})
+
+@app.route('/evaluation/duplicate', methods=['POST'])
+def evaluation_duplicate():
+    eval_from = json.loads(request.form.get('evalFrom'))
+    eval_to = json.loads(request.form.get('evalTo'))
+
+    eNew: Evaluation = Evaluation(eval_to.get('goalCode'), eval_to.get('degreeName'), eval_to.get('degreeLevel'), eval_to.get('sectionID'), eval_to.get('courseID'), eval_to.get('semester'), eval_to.get('year'), eval_from.get('evaluationType'), eval_from.get('A'), eval_from.get('B'), eval_from.get('C'), eval_from.get('F'), eval_from.get('improvementSuggestion'))
+
+    Data._instance.db.insert_or_update_evaluation(eNew)
+
+    return jsonify({"success": 1})
 
 ################################ Backend routes
 
