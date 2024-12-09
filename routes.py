@@ -53,6 +53,9 @@ def selectinstructor():
 def selectsemester():
     return render_template('selectsemester.html')
 
+@app.route('/evaluation')
+def evaluation():
+    return render_template('evaluation.html')
 
 
 ################################ Form routes
@@ -140,7 +143,7 @@ def section_form():
 
     Data._instance.db.insert_section(Section(sectionID, input_course.get("courseID"), semester, year, numStudents, input_instructor.get('instructorID')))
     # temp insert example evaluation
-    # Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
+    Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
     return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
 
 @app.route('/evaluation/form', methods=['POST'])
@@ -151,12 +154,13 @@ def evaluation_form():
 
     time: int = Section.get_time_from_semester(semester, int(year))
 
+    instructor: Instructor = Instructor(input_instructor.get('instructorID'), input_instructor.get('instructorName'))
     sections: list[Section] = instructor.get_sections(Data._instance.db)
     e = []
     if sections:
         for section in sections:
             if section.get_time() == time:
-                goals: list[Goal] = section.all_goals
+                goals: list[Goal] = section.all_goals(Data._instance.db)
                 if goals:
                     for goal in goals:
                         evaluation: Evaluation = Data._instance.db.get_evaluation(goal.goalCode, goal.degreeName, goal.degreeLevel, section.sectionID, section.courseID, section.semester, section.year)
