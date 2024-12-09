@@ -140,6 +140,20 @@ class Section:
         else:
             raise ValueError(f"Invalid semester: {isemester}")
         return int(iyear * 10) + int(nSemester)
+    
+    def all_goals(self, db) -> list[Goal]:
+        from database import Database
+        if not isinstance(db, Database):
+            print("Error: Incorrect database type passed into get_all_goals()")
+            return None
+        gc: list[GoalCourse] = self.get_course(db).get_goal_courses(db)
+        goals: list[Goal] = []
+        if gc is None:
+            return goals
+        for g in gc:
+            goals.append(g.get_goal(db))
+        return goals
+
 
 
 class Instructor:
