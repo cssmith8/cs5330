@@ -8,7 +8,7 @@ from data import Data
 def main():
     Data._instance.db.create_tables()
     Data._instance.db.clear_tables()
-    add_sample_data: bool = True
+    add_sample_data: bool = False
     if add_sample_data:
         Data._instance.db.insert_degree(Degree("Computer Science", "BS"))
         Data._instance.db.insert_course(Course("CS5330", "Databases"))

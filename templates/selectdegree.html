@@ -113,7 +113,8 @@
                     }
                     courses.forEach(course => {
                         const courseElement = document.createElement('p');
-                        courseElement.textContent = course.courseID + ", Core: " +  course.isCore;
+                        courseElement.classList.add('bordered');
+                        courseElement.textContent = course.courseID + ", Core: " +  ((course.isCore == 1) ? "Yes" : "No");
                         associatedCourses.appendChild(courseElement);
                     });
                     goals = data.goals;
@@ -213,7 +214,7 @@
                         sections.forEach(section => {
                             const sectionElement = document.createElement('p');
                             sectionElement.classList.add('bordered');
-                            sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
+                            sectionElement.textContent = section.courseID + " " + section.sectionID + ", Semester: " +  section.semester + " " + section.year + " - Instructor ID: " + section.instructorID;
                             associatedSections.appendChild(sectionElement);
                         });
                     }    
