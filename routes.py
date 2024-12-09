@@ -143,6 +143,28 @@ def section_form():
     # Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
     return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
 
+@app.route('/evaluation/form', methods=['POST'])
+def evaluation_form():
+    input_instructor = json.loads(request.form.get('instructor'))
+    semester: str = request.form.get('semester')
+    year: int = request.form.get('year')
+
+    time: int = Section.get_time_from_semester(semester, int(year))
+
+    sections: list[Section] = instructor.get_sections(Data._instance.db)
+    e = []
+    if sections:
+        for section in sections:
+            if section.get_time() == time:
+                goals: list[Goal] = section.all_goals
+                if goals:
+                    for goal in goals:
+                        evaluation: Evaluation = Data._instance.db.get_evaluation(goal.goalCode, goal.degreeName, goal.degreeLevel, section.sectionID, section.courseID, section.semester, section.year)
+                        if evaluation:
+                            e.append({'goalCode': evaluation.goalCode, 'degreeName': evaluation.degreeName, 'degreeLevel': evaluation.degreeLevel, 'sectionID': evaluation.sectionID, 'courseID': evaluation.courseID, 'semester': evaluation.semester, 'year': evaluation.year, 'evaluationType': evaluation.evaluationType, 'A': evaluation.A, 'B': evaluation.B, 'C': evaluation.C, 'F': evaluation.F, 'improvementSuggestion': evaluation.improvementSuggestion})
+                        else:
+                            e.append({'goalCode': goal.goalCode, 'degreeName': goal.degreeName, 'degreeLevel': goal.degreeLevel, 'sectionID': section.sectionID, 'courseID': section.courseID, 'semester': section.semester, 'year': section.year, 'evaluationType': "", 'A': -1, 'B': -1, 'C': -1, 'F': -1, 'improvementSuggestion': ""})
+    return jsonify({"evaluations": e})
 @app.route('/selectdegree/form', methods=['POST'])
 def selectdegree_form():
     input_degree = json.loads(request.form.get('degree'))

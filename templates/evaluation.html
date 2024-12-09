@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Manage Evaluations</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    </head>
+    <body>
+        <a href="/home">Back to home page</a>
+        <br>
+        <h1>Enter Semester and Instructor</h1>
+
+        <form id="dataForm">
+            <div>
+                <label for="instructordd">Instructor</label>
+                <select name="instructordd" id="instructordd" required>
+                </select>
+                <br>
+                <label for="semester">Semester</label>
+                <select name="semester" id="semester" required>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Fall">Fall</option>
+                </select>
+                <label for="year">Year</label>
+                <input type="number" name="year" id="year" required>
+                <br>
+                <button type="submit">Submit</button>
+            </div>
+            <div>
+                <p id="result"></p>
+                <p id="field1error"></p>
+            </div>
+        </form>
+
+        <div id="associatedSections">
+        </div>
+
+        <h2>Edit Evaluation Info</h2>
+
+        <form id="editForm">
+            <div>
+                <label for="evalType">Evaluation Type</label>
+                <input type="text" id="evalType" name="evalType" required>
+                <span id="field1error" style="color: red"></span>
+                <br>
+                <label for="aamount">A amount</label>
+                <input type="number" name="aamount" id="aamount" required>
+                <br>
+                <label for="bamount">B amount</label>
+                <input type="number" name="bamount" id="bamount" required>
+                <br>
+                <label for="camount">C amount</label>
+                <input type="number" name="camount" id="camount" required>
+                <br>
+                <label for="famount">F amount</label>
+                <input type="number" name="famount" id="famount" required>
+                <br>
+                <label for="improvement">Improvement Suggestion</label>
+                <textarea name="improvement" id="improvement" rows="4" cols="50" required></textarea>
+                <br>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+
+        <div id="editResult">
+        </div>
+        
+        <a href="/home">Back to home page</a>
+
+        <script>
+            //instructors
+            var instructors = [];
+            var evaluations = [];
+            fetch('/get_all_instructors')
+                .then(response => response.json())
+                .then(data => {
+                    instructors = data.content;
+                    const dropdown = document.getElementById('instructordd');
+                    data.content.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = instructors.indexOf(option);
+                        optionElement.textContent = option.instructorName + " " + option.instructorID;
+                        dropdown.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+            
+            document.getElementById('dataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const instructorIndex = document.getElementById('instructordd').value;
+                const selectedInstructor = instructors[instructorIndex];
+                const semester = document.getElementById('semester').value;
+                const year = document.getElementById('year').value;
+                
+                const formData = new FormData();
+                formData.append('instructor', JSON.stringify(selectedInstructor));
+                formData.append('semester', semester);
+                formData.append('year', year);
+                
+                fetch('/evaluation/form', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = 'Result: ' + data.result;
+                    if (data.invalid1) {
+                        document.getElementById('field1error').textContent = 'Invalid';
+                    }
+
+                    evaluations = data.evaluations;
+                    const associatedSections = document.getElementById('associatedSections');
+                    //clear the previous courses
+                    associatedSections.innerHTML = "";
+                    //if sections is empty, display message
+                    if (evaluations.length == 0) {
+                        const sectionElement = document.createElement('p');
+                        sectionElement.textContent = "No sections with any goals found";
+                        associatedSections.appendChild(sectionElement);
+                    } else {
+                        evaluations.forEach(e => {
+                            const sectionElement = document.createElement('p');
+                            sectionElement.textContent = "ID: " + e.sectionID;
+                            associatedSections.appendChild(sectionElement);
+
+                            var aamt 
+                        });
+                    }    
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        </script>
+    </body>
+</html>
