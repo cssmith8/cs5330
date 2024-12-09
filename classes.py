@@ -266,3 +266,13 @@ class Evaluation:
             print("Error: Incorrect database type passed into get_goal()")
             return None
         return db.get_goal(self.goalCode, self.degreeName, self.degreeLevel)
+    
+    # get the percentage of passing students
+    def get_passing_percentage(self, db) -> float:
+        from database import Database
+        if not isinstance(db, Database):
+            print("Error: Incorrect database type passed into get_section()")
+            return None
+        if self.F is None or self.get_section(db).numStudents is None:
+            return 0
+        return 1 - (self.F / self.get_section(db).numStudents)

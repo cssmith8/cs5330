@@ -140,7 +140,7 @@ def section_form():
 
     Data._instance.db.insert_section(Section(sectionID, input_course.get("courseID"), semester, year, numStudents, input_instructor.get('instructorID')))
     # temp insert example evaluation
-    # Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
+    Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
     return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
 
 @app.route('/selectdegree/form', methods=['POST'])
@@ -256,7 +256,6 @@ def selectsemester_form():
     sections: list[Section] = Data._instance.db.get_all_sections()
 
     s = []
-    # print length
     if sections:
         for section in sections:
             if section.get_time() == time:
@@ -276,6 +275,29 @@ def selectsemester_form():
                 s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID, 'status': evalinfo})
                       
     return jsonify({"sections": s})
+
+@app.route('/selectsemester/form2', methods=['POST'])
+def selectsemester_form2():
+    semester: str = request.form.get('semester2')
+    year: int = request.form.get('year2')
+    percent: int = request.form.get('percentage')
+
+    time: int = Section.get_time_from_semester(semester, int(year))
+    sections: list[Section] = Data._instance.db.get_all_sections()
+
+    s = []
+    if sections:
+        for section in sections:
+            if section.get_time() == time:
+                evalinfo: str = "0"
+                real: list[Evaluation] = section.get_evaluations(Data._instance.db)
+                if real:
+                    for e in real:
+                        percentage: float = e.get_passing_percentage(Data._instance.db)
+                        if percentage >= float(percent) / 100.0:
+                            s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID, 'percentage': percentage * 100})
+    return jsonify({"sections": s})
+
 
 ################################ Backend routes
 

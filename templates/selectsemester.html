@@ -27,6 +27,29 @@
         <h2>Associated Sections</h2>
         <div id="associatedSections">
         </div>
+
+        <h2>Query Semester with Percentage</h2>
+        <form id="dataForm2">
+            <div>
+                <label for="semester2">Input Semester</label>
+                <select name="semester2" id="semester2" required>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Fall">Fall</option>
+                </select>
+                <label for="year2">Year</label>
+                <input type="number" name="year2" id="year2" required>
+                <label for="percentage">Percentage</label>
+                <input type="number" name="percentage" id="percentage" required>
+                <br>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+
+        <h2>Associated Sections with Passing Percentage</h2>
+
+        <div id="associatedSections2">
+        </div>
         
         <a href="/home">Back to home page</a>
 
@@ -80,6 +103,38 @@
                             }
                             const evalElement = document.createElement('p');
                             evalElement.textContent = "-    Evaluation: " + statusText;
+                            associatedSections.appendChild(evalElement);
+                        });
+                    }              
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            document.getElementById('dataForm2').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                fetch('/selectsemester/form2', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    sections = data.sections;
+                    const associatedSections = document.getElementById('associatedSections2');
+                    //clear the previous courses
+                    associatedSections.innerHTML = "";
+                    //if sections is empty, display message
+                    if (sections.length == 0) {
+                        const sectionElement = document.createElement('p');
+                        sectionElement.textContent = "No sections found";
+                        associatedSections.appendChild(sectionElement);
+                    } else {
+                        sections.forEach(section => {
+                            const sectionElement = document.createElement('p');
+                            sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
+                            associatedSections.appendChild(sectionElement);
+                            const evalElement = document.createElement('p');
+                            evalElement.textContent = "-    Passing Percentage: " + section.percentage + "%";
                             associatedSections.appendChild(evalElement);
                         });
                     }              
