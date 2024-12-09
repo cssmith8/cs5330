@@ -41,6 +41,7 @@
                     const div = document.getElementById('courses');
                     data.content.forEach(option => {
                         const pElement = document.createElement('p');
+                        pElement.classList.add('bordered');
                         pElement.textContent = option.courseID + ": " + option.courseName;
                         div.appendChild(pElement);
                     });

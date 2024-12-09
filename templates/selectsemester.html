@@ -39,6 +39,7 @@
                 </select>
                 <label for="year2">Year</label>
                 <input type="number" name="year2" id="year2" required>
+                <br>
                 <label for="percentage">Percentage</label>
                 <input type="number" name="percentage" id="percentage" required>
                 <br>
@@ -105,7 +106,7 @@
                                     statusText = "Unknown";
                             }
                             const evalElement = document.createElement('p');
-                            evalElement.textContent = "-    Evaluation: " + statusText;
+                            evalElement.textContent = "Evaluation: " + statusText;
                             sectionDiv.appendChild(evalElement);
 
                             associatedSections.appendChild(sectionDiv);

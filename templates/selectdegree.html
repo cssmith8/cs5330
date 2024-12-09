@@ -129,6 +129,7 @@
                     }
                     goals.forEach(goal => {
                         const goalElement = document.createElement('p');
+                        goalElement.classList.add('bordered');
                         goalElement.textContent = goal.goalCode + ", " + goal.description;
                         associatedGoals.appendChild(goalElement);
 
@@ -173,6 +174,7 @@
                     }
                     courses.forEach(course => {
                         const courseElement = document.createElement('p');
+                        courseElement.classList.add('bordered');
                         courseElement.textContent = course.courseID + " " +  course.courseName;
                         associatedCourses2.appendChild(courseElement);
                     });
@@ -210,6 +212,7 @@
                     } else {
                         sections.forEach(section => {
                             const sectionElement = document.createElement('p');
+                            sectionElement.classList.add('bordered');
                             sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
                             associatedSections.appendChild(sectionElement);
                         });

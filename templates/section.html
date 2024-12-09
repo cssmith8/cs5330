@@ -83,7 +83,8 @@
                                     const div = document.getElementById('degreeCourses');
                                     data.content.forEach(option => {
                                         const pElement = document.createElement('p');
-                                        pElement.textContent = sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
+                                        pElement.classList.add('bordered');
+                                        pElement.textContent ="ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
                                         div.appendChild(pElement);
                                     });
                                 })

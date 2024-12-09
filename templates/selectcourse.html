@@ -90,6 +90,7 @@
                     } else {
                         sections.forEach(section => {
                             const sectionElement = document.createElement('p');
+                            sectionElement.classList.add('bordered');
                             sectionElement.textContent = "ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
                             associatedSections.appendChild(sectionElement);
                         });

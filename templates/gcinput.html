@@ -68,6 +68,7 @@
                                     const div = document.getElementById('degreeCourses');
                                     data.content.forEach(option => {
                                         const pElement = document.createElement('p');
+                                        pElement.classList.add('bordered');
                                         pElement.textContent = "[" + option.goalCode + " " + option.degreeName + " " + option.degreeLevel + "] " + option.courseID;
                                         div.appendChild(pElement);
                                     });

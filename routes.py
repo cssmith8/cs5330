@@ -142,8 +142,7 @@ def section_form():
     year: int = request.form.get('year')
 
     Data._instance.db.insert_section(Section(sectionID, input_course.get("courseID"), semester, year, numStudents, input_instructor.get('instructorID')))
-    # temp insert example evaluation
-    # Data._instance.db.insert_evaluation(Evaluation("123g", "Computer Science", "BS", "123s", "5330", "Fall", 2024, "Midterm", 1, 2, 3, 4, "suggestion"))
+    
     return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
 
 @app.route('/evaluation/form', methods=['POST'])
@@ -217,18 +216,22 @@ def selectdegree_form3():
     endTime: int = Section.get_time_from_semester(endSemester, int(endYear))
 
     degree_courses: list[DegreeCourse] = degree.get_degree_courses(Data._instance.db)
-
+    sections: list[Section] = []
     if not degree_courses:
         return jsonify({"sections": []})
     for dc in degree_courses:
         course: Course = dc.get_course(Data._instance.db)
-        s = []
-        sections: list[Section] = course.get_sections(Data._instance.db)
-        if sections:
-            for section in sections:
+        newSections: list[Section] = course.get_sections(Data._instance.db)
+        if newSections:
+            for section in newSections:
                 if section.get_time() >= startTime and section.get_time() <= endTime:
-                    s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID})
-    
+                    sections.append(section)
+
+    sections.sort(key=lambda x: x.get_time())
+    s = []
+    for section in sections:
+        s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID})
+
     return jsonify({"sections": s})
 
 @app.route('/selectcourse/form', methods=['POST'])
@@ -244,6 +247,7 @@ def selectcourse_form():
     endTime: int = Section.get_time_from_semester(endSemester, int(endYear))
 
     sections: list[Section] = course.get_sections(Data._instance.db)
+    sections.sort(key=lambda x: x.get_time())
     s = []
     if sections:
         for section in sections:
@@ -265,11 +269,13 @@ def selectinstructor_form():
     endTime: int = Section.get_time_from_semester(endSemester, int(endYear))
 
     sections: list[Section] = instructor.get_sections(Data._instance.db)
+    sections.sort(key=lambda x: x.get_time())
     s = []
     if sections:
         for section in sections:
             if section.get_time() >= startTime and section.get_time() <= endTime:
                 s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID})
+
 
     return jsonify({"sections": s})
 
