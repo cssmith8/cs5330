@@ -84,10 +84,9 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('result').textContent = 'Result: ' + data.result;
-                    if (data.invalid1) {
-                        document.getElementById('field1error').textContent = 'Invalid';
-                    }
+                    document.getElementById('result').textContent = (data.success == 1) ? "Goal Successfully Entered" : "";
+                    document.getElementById('field1error').textContent = data.field1error;
+                    document.getElementById('field2error').textContent = data.field2error;
                 })
                 .catch(error => console.error('Error:', error));
             });

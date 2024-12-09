@@ -65,24 +65,37 @@ def dcinput_form():
     input_degree = json.loads(request.form.get('degree'))
     input_course = json.loads(request.form.get('course'))
     isCore: bool = request.form.get('isCore')
+    if isCore == "false":
+        isCore = False
+    else:
+        isCore = True
+
+    existingdc: DegreeCourse = Data._instance.db.get_degree_course(input_degree.get('degreeName'), input_degree.get('degreeLevel'), input_course.get("courseID"))
+    if existingdc:
+        return jsonify({"success": 0})
 
     dc: DegreeCourse = DegreeCourse(input_degree.get('degreeName'), input_degree.get('degreeLevel'), input_course.get("courseID"), isCore)
-
     Data._instance.db.insert_degree_course(dc)
 
-    return jsonify({"result": str(isCore)})
+    return jsonify({"success": 1})
 
 @app.route('/degree/form', methods=['POST'])
 def degree_form():
     degreeName: str = request.form.get('degreeName')
     degreeLevel: str = request.form.get('degreeLevel')
 
-    # input validation here
+    # if degreeName is over 50 characters, return invalid1
+    if len(degreeName) > 50:
+        return jsonify({"success": 0, "field1error": "Degree Name too Long", "field2error": ""})
+    
+    # if degreeLevel is over 50 characters, return invalid2
+    if len(degreeLevel) > 50:
+        return jsonify({"success": 0, "field1error": "", "field2error": "Degree Level too Long"})
 
     degree: Degree = Degree(degreeName, degreeLevel)
     Data._instance.db.insert_degree(degree)
 
-    return jsonify({"result": "success", "invalid1": False, "invalid2": False})
+    return jsonify({"success": 1, "field1error": "", "field2error": ""})
 
 @app.route('/goal/form', methods=['POST'])
 def goal_form():
@@ -90,60 +103,98 @@ def goal_form():
     goalCode: str = request.form.get('goalCode')
     description: str = request.form.get('goalDesc')
 
-    # input validation here
+    # goalCode should be 4 characters
+    if len(goalCode) != 4:
+        return jsonify({"success": 0, "field1error": "Inavlid Goal Code", "field2error": ""})
+    
+    # description should be less than 50
+    if len(description) > 50:
+        return jsonify({"success": 0, "field1error": "", "field2error": "Description too Long"})
 
     # degree: Degree = Degree(degreeName, degreeLevel)
     goal: Goal = Goal(goalCode, input_degree.get('degreeName'), input_degree.get('degreeLevel'), description)
     Data._instance.db.insert_goal(goal)
 
-    return jsonify({"result": goalCode + " " + input_degree.get('degreeName'), "invalid1": False, "invalid2": False})
+    return jsonify({"success": 1, "field1error": "", "field2error": ""})
 
 @app.route('/course/form', methods=['POST'])
 def course_form():
     courseID: str = request.form.get('courseID')
     courseName: str = request.form.get('courseName')
 
-    # input validation here
+    # course name should be less than 50 characters
+    if len(courseName) > 50:
+        return jsonify({"success": 0, "field1error": "Course Name too Long", "field2error": ""})
+
+    # courseID should be between 6 and 8 characters
+    if len(courseID) < 6 or len(courseID) > 8:
+        return jsonify({"succcess": 0, "field1error": "", "field2error": "CourseID Invalid Length"})
+    
+    # courseID should be 2-4 letters and 4 digits
+    if not courseID[:2].isalpha() or not courseID[4:].isdigit():
+        return jsonify({"success": 0, "field1error": "", "field2error": "CourseID Invalid Format"})
 
     course: Course = Course(courseID, courseName)
     Data._instance.db.insert_course(course)
 
-    return jsonify({"result": "course success " + courseID, "invalid1": False, "invalid2": False})
+    return jsonify({"success": 1, "field1error": "", "field2error": ""})
 
 @app.route('/gcinput/form', methods=['POST'])
 def gcinput_form():
     input_goal = json.loads(request.form.get('goal'))
     input_course = json.loads(request.form.get('course'))
 
+    existinggc: GoalCourse = Data._instance.db.get_goal_course(input_goal.get('goalCode'), input_goal.get('degreeName'), input_goal.get('degreeLevel'), input_course.get("courseID"))
+    if existinggc:
+        return jsonify({"success": 0})
+
     gc: GoalCourse = GoalCourse(input_goal.get('goalCode'), input_goal.get('degreeName'), input_goal.get('degreeLevel'), input_course.get("courseID"))
     Data._instance.db.insert_goal_course(gc)
 
-    return jsonify({"result": gc.courseID + " - " + gc.goalCode})
+    return jsonify({"success": 1})
 
 @app.route('/instructor/form', methods=['POST'])
 def instructor_form():
     instructorName: str = request.form.get('instructorName')
     instructorID: str = request.form.get('instructorID')
 
-    # input validation here
+    # instructorID should be 8 characters
+    if len(instructorID) != 8:
+        return jsonify({"success": 0, "field1error": "", "field2error": "InstructorID Invalid Length"})
+    
+    # instructor name should be less than 50 characters
+    if len(instructorName) > 50:
+        return jsonify({"success": 0, "field1error": "Instructor Name too Long", "field2error": ""})
 
     instructor: Instructor = Instructor(instructorID, instructorName)
     Data._instance.db.insert_instructor(instructor)
 
-    return jsonify({"result": "instructor success " + instructorName, "invalid1": False, "invalid2": False})
+    return jsonify({"success": 1, "field1error": "", "field2error": ""})
 
 @app.route('/section/form', methods=['POST'])
 def section_form():
     input_instructor = json.loads(request.form.get('instructor'))
     input_course = json.loads(request.form.get('course'))
     sectionID: str = request.form.get('sectionID')
-    numStudents: int = request.form.get('numStudents')
+    numStudents: int = int(request.form.get('numStudents'))
     semester: str = request.form.get('semester')
-    year: int = request.form.get('year')
+    year: int = int(request.form.get('year'))
+
+    # sectionID should be 3 numbers
+    if len(sectionID) != 3 or not sectionID.isdigit():
+        return jsonify({"success": 0, "field1error": "invalid sectionID", "field2error": "", "field3error": ""})
+    
+    # numStudents should be a whole positive number and not a decimal
+    if numStudents < 0 or numStudents % 1 != 0 or numStudents > 10000:
+        return jsonify({"success": 0, "field1error": "", "field2error": "", "field3error": "invalid number of students"})
+    
+    # year should not be a decimal or negative
+    if year < 1000 or year % 1 != 0 or year > 9999:
+        return jsonify({"success": 0, "field1error": "", "field2error": "invalid year", "field3error": ""})
 
     Data._instance.db.insert_section(Section(sectionID, input_course.get("courseID"), semester, year, numStudents, input_instructor.get('instructorID')))
     
-    return jsonify({"result": "added section " + sectionID + " " + input_course.get("courseID") + " " + input_instructor.get('instructorID') + " " + str(numStudents) + " " + semester + " " + str(year)})
+    return jsonify({"success": 1, "field1error": "", "field2error": "", "field3error": ""})
 
 @app.route('/evaluation/form', methods=['POST'])
 def evaluation_form():
@@ -346,6 +397,14 @@ def evaluation_edit():
     F: int = request.form.get('F')
     improvementSuggestion: str = request.form.get('improvementSuggestion')
 
+    # evaluationType should be less than 50 characters
+    if len(evaluationType) > 50:
+        return jsonify({"success": 0, "field1error": "Evaluation Type too Long", "field2error": ""})
+    
+    # improvementSuggestion should be less than 150 characters
+    if len(improvementSuggestion) > 150:
+        return jsonify({"success": 0, "field1error": "", "field2error": "Improvement Suggestion too Long"})
+
     if A == "": A = -1
     if B == "": B = -1
     if C == "": C = -1
@@ -355,7 +414,7 @@ def evaluation_edit():
 
     Data._instance.db.insert_or_update_evaluation(e)
 
-    return jsonify({"success": 1})
+    return jsonify({"success": 1, "field1error": "", "field2error": ""})
 
 @app.route('/evaluation/duplicate', methods=['POST'])
 def evaluation_duplicate():
@@ -397,7 +456,8 @@ def get_all_degree_courses():
         return jsonify({'content': []})
     r = []
     for dc in degreeCourses:
-        r.append({'courseID': dc.courseID, 'degreeName': dc.degreeName, 'degreeLevel': dc.degreeLevel, 'isCore': dc.isCore})
+        s: str = "Yes" if dc.isCore else "No"
+        r.append({'courseID': dc.courseID, 'degreeName': dc.degreeName, 'degreeLevel': dc.degreeLevel, 'isCore': s})
     return jsonify({'content': r})
 
 @app.route('/get_all_goals')

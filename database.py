@@ -56,7 +56,7 @@ class Database:
                 DegreeName VARCHAR(64),
                 DegreeLevel VARCHAR(64),
                 CourseID VARCHAR(64),
-                IsCore BOOLEAN,
+                IsCore INT,
                 PRIMARY KEY (DegreeName, DegreeLevel, CourseID),
                 FOREIGN KEY (DegreeName, DegreeLevel) REFERENCES Degree(DegreeName, DegreeLevel),
                 FOREIGN KEY (CourseID) REFERENCES Course(CourseID)
@@ -183,9 +183,7 @@ class Database:
     def insert_degree_course(self, degreeCourse: DegreeCourse) -> None:
         cursor = self.connection.cursor()
         try:
-            core: int = 0
-            if degreeCourse.isCore:
-                core = 1
+            core = int(degreeCourse.isCore)
             cursor.execute("INSERT INTO Degree_Course (DegreeName, DegreeLevel, CourseID, IsCore) VALUES (%s, %s, %s, %s)", (degreeCourse.degreeName, degreeCourse.degreeLevel, degreeCourse.courseID, core))
             self.connection.commit()
             print(f"Degree course {degreeCourse.degreeName} {degreeCourse.degreeLevel} {degreeCourse.courseID} inserted successfully.")

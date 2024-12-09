@@ -21,6 +21,7 @@
                 <br>
                 <label for="sectionID">Section ID</label>
                 <input type="text" name="sectionID" id="sectionID" required>
+                <span id="field1error" style="color: red"></span>
                 <br>
                 <label for="semester">Semester</label>
                 <select name="semester" id="semester" required>
@@ -30,9 +31,11 @@
                 </select>
                 <label for="year">Year</label>
                 <input type="number" name="year" id="year" required>
+                <span id="field2error" style="color: red"></span>
                 <br>
                 <label for="numStudents">Number of Students</label>
                 <input type="number" name="numStudents" id="numStudents" required>
+                <span id="field3error" style="color: red"></span>
                 <br>
                 <button type="submit">Submit</button>
             </div>
@@ -61,7 +64,7 @@
                     data.content.forEach(option => {
                         const optionElement = document.createElement('option');
                         optionElement.value = instructors.indexOf(option);
-                        optionElement.textContent = option.instructorName + " " + option.instructorID;
+                        optionElement.textContent = "[" + option.instructorID + "] " + option.instructorName;
                         dropdown.appendChild(optionElement);
                     });
 
@@ -84,7 +87,7 @@
                                     data.content.forEach(option => {
                                         const pElement = document.createElement('p');
                                         pElement.classList.add('bordered');
-                                        pElement.textContent ="ID: " + section.sectionID + ", Semester: " +  section.semester + " " + section.year;
+                                        pElement.textContent = option.courseID + " " + option.sectionID + ": " +  option.semester + " " + option.year + " (" + option.numStudents + " students) - Instructor ID: " + option.instructorID
                                         div.appendChild(pElement);
                                     });
                                 })
@@ -119,10 +122,10 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('result').textContent = 'Result: ' + data.result;
-                    if (data.invalid1) {
-                        document.getElementById('field1error').textContent = 'Invalid';
-                    }
+                    document.getElementById('result').textContent = (data.success == 1) ? "Section Successfully Added" : "Error";
+                    document.getElementById('field1error').textContent = data.field1error;
+                    document.getElementById('field2error').textContent = data.field2error;
+                    document.getElementById('field3error').textContent = data.field3error;
                 })
                 .catch(error => console.error('Error:', error));
             });

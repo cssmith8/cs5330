@@ -100,10 +100,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('result').textContent = 'Result: ' + data.result;
-                    if (data.invalid1) {
-                        document.getElementById('field1error').textContent = 'Invalid';
-                    }
+                    document.getElementById('result').textContent = (data.success == 1) ? "Degree-Course Successfully Linked" : "Degree-Course Already Linked";
                 })
                 .catch(error => console.error('Error:', error));
             });
