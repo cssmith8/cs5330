@@ -54,7 +54,7 @@
                     data.content.forEach(option => {
                         const optionElement = document.createElement('option');
                         optionElement.value = instructors.indexOf(option);
-                        optionElement.textContent = option.instructorID + " " + option.instructorName;
+                        optionElement.textContent = "[" + option.instructorID + "] " + option.instructorName;
                         dropdown.appendChild(optionElement);
                     });
                 })
