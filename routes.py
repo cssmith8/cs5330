@@ -345,17 +345,19 @@ def selectsemester_form():
                 evalinfo: str = "0"
                 real: list[Evaluation] = section.get_evaluations(Data._instance.db)
                 if real:
-                    evalinfo = "1"
-                    e: Evaluation = real[0]
-                    if (e.A is None or e.A == -1) or (e.B is None or e.B == -1) or (e.C is None or e.C == -1) or (e.F is None or e.F == -1) or (e.evaluationType is None or e.evaluationType == ""):
-                        if (e.improvementSuggestion is None or e.improvementSuggestion == ""):
-                            evalinfo = "4"
+                    for e in real:
+                        evalinfo = "1"
+                        if (e.A is None or e.A == -1) or (e.B is None or e.B == -1) or (e.C is None or e.C == -1) or (e.F is None or e.F == -1) or (e.evaluationType is None or e.evaluationType == ""):
+                            if (e.improvementSuggestion is None or e.improvementSuggestion == ""):
+                                evalinfo = "4"
+                            else:
+                                evalinfo = "3"
                         else:
-                            evalinfo = "3"
-                    else:
-                        if (e.improvementSuggestion is None or e.improvementSuggestion == ""):
-                            evalinfo = "2"
-                s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID, 'status': evalinfo})
+                            if (e.improvementSuggestion is None or e.improvementSuggestion == ""):
+                                evalinfo = "2"
+                        s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID, 'status': evalinfo})
+                else:
+                    s.append({'sectionID': section.sectionID, 'semester': section.semester, 'year': section.year, 'numStudents': section.numStudents, 'instructorID': section.instructorID, 'courseID': section.courseID, 'status': evalinfo})
                       
     return jsonify({"sections": s})
 
